@@ -1,0 +1,850 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><link rel="icon" href="mascotes/nex.jpg"><style>[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Nexus CRM Pro</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: menu lateral estreito em grupos (Principal, Operações, Gestão), item ativo em pílula azul-cobalto sobre azul-marinho, ouro só na marca; cada tela abre com ícone + título + ações à direita; ações abrem janelas sobrepostas */
+:root{
+  color-scheme:dark;
+  --bg:#0B1120; --lado:#0D1526; --painel:#131C31; --painel2:#182340; --painel3:#1F2D52; --linha:#1F2A48;
+  --texto:#F8FAFC; --suave:#A9B4CC; --fraco:#8592AD;
+  --acao:#2B66F6; --acao2:#93BBFF; --acaofundo:#152A55; --acaolinha:#2B4A8C;
+  --ok:#34D399; --okfundo:#12302A; --alerta:#FBBF24; --alertafundo:#33280F; --perigo:#F87171; --perigofundo:#3A1A22;
+  --azul:#38BDF8; --ciano:#2DD4BF; --marcaouro:#E6C36A; --sombra:#0009;
+  --f-marca:"Michroma",ui-sans-serif,system-ui,sans-serif;
+  --f:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+body.claro{
+  color-scheme:light;
+  --bg:#F3F6FB; --lado:#FFFFFF; --painel:#FFFFFF; --painel2:#F5F8FD; --painel3:#E9EEF7; --linha:#DDE4F0;
+  --texto:#111A2E; --suave:#4B5873; --fraco:#64718C;
+  --acao:#2563EB; --acao2:#1D4ED8; --acaofundo:#E6EEFE; --acaolinha:#BBD0FB;
+  --ok:#0F8A5F; --okfundo:#E1F6EC; --alerta:#A16207; --alertafundo:#FDF3D7; --perigo:#C8322B; --perigofundo:#FCE8E6;
+  --azul:#0284C7; --ciano:#0D9488; --marcaouro:#9C7128; --sombra:#111a2e33;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--texto);font:14px/1.45 var(--f);-webkit-font-smoothing:antialiased;margin:0}
+h1,h2,h3,p,ul,ol{margin:0} ul,ol{padding:0;list-style:none}
+h1{font-size:19px;font-weight:700;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--acao2);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.suave{color:var(--suave)} .ok{color:var(--ok)} .alerta{color:var(--alerta)} .perigo{color:var(--perigo)} .roxo{color:var(--acao2)}
+svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.app{display:grid;grid-template-columns:196px minmax(0,1fr);min-height:100%}
+body.rec .app{grid-template-columns:60px minmax(0,1fr)}
+.lado{background:var(--lado);border-right:1px solid var(--linha);padding:8px 6px;display:flex;flex-direction:column;gap:1px;position:sticky;top:0;height:100vh;overflow:auto}
+.marca{display:flex;align-items:center;gap:8px;padding:4px 6px 10px}
+.marca svg.logo{width:30px;height:30px;flex:none}
+.marca b{font:400 11.5px var(--f-marca);letter-spacing:.22em;color:var(--marcaouro);display:block}
+.marca small{font:400 11px var(--f-marca);letter-spacing:.24em;color:var(--suave)}
+.marca .rc{margin-left:auto;background:none;border:0;color:var(--suave);padding:4px}
+.empresa{display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--bg);border:1px solid var(--linha);border-radius:8px;padding:7px 9px;margin:0 0 8px;text-align:left;width:100%}
+.empresa b{font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:138px}
+.empresa span span{font-size:11px;color:var(--suave)}
+.grupo{font-size:11px;color:var(--fraco);letter-spacing:.05em;text-transform:uppercase;padding:10px 6px 4px;font-weight:600}
+.lado a.it{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:6px;color:var(--texto);font-weight:500;font-size:12.5px;white-space:nowrap;transition:background .15s}
+.lado a.it:hover{background:var(--painel2)}
+.lado a.it.on{background:var(--acao);color:#fff;font-weight:600}
+.lado .q{margin-left:auto;font-size:11px;font-weight:700;background:var(--painel3);padding:1px 6px;border-radius:99px}
+.lado a.on .q{background:#ffffff33}
+.pe{margin-top:auto;display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--linha)}
+.saldo{border:1px solid #7A5A1E;border-radius:6px;padding:6px 8px;font-size:11.5px;font-weight:600;background:none;text-align:left}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.duo .bt{justify-content:center;padding:5px;font-size:11.5px;border-radius:5px}
+.tema{display:flex;align-items:center;gap:8px;border:1px solid var(--linha);background:var(--bg);border-radius:8px;padding:5px 8px;font-size:12.5px;width:100%;text-align:left}
+.tema small{display:block;font-size:11px;color:var(--fraco)}
+.tema .sn{margin-left:auto;background:none;border:0;padding:4px}
+.perfil{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:8px;background:none;border:0;text-align:left;width:100%}
+.perfil:hover{background:var(--painel2)}
+.perfil b{font-size:11.5px;display:block} .perfil span span{font-size:11px;color:var(--suave);display:block;max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av{width:28px;height:28px;border-radius:50%;background:#2563EB;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex:none}
+.exemplo{font-size:11px;color:var(--fraco);text-align:center}
+body.rec .lado .tx,body.rec .grupo,body.rec .empresa,body.rec .saldo,body.rec .duo,body.rec .exemplo,body.rec .marca div,body.rec .tema>span,body.rec .lado .q{display:none}
+body.rec .lado a.it{justify-content:center;padding:8px}
+
+main{padding-block:20px 40px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px;min-width:0}
+.hd{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.hd .tt{display:flex;gap:10px;align-items:flex-start;min-width:0}
+.hd .tt>svg.i{width:20px;height:20px;margin-top:6px}
+.hd p{color:var(--suave);font-size:13px;margin-top:3px}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bt{background:var(--painel);border:1px solid var(--linha);padding:7px 13px;border-radius:7px;display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:13px;transition:border-color .15s,background .15s,filter .15s}
+.bt:hover{border-color:var(--acaolinha)}
+.bt.pri{background:var(--acao);border-color:var(--acao);color:#fff}
+.bt.pri:hover{filter:brightness(1.12)}
+.bt.amb{background:#F59E0B;border-color:#F59E0B;color:#1A1205}
+.bt.per{color:var(--perigo)} .bt.ic{padding:7px 8px}
+.bt.verde{color:var(--ok);border-color:#1F5A47;background:none;justify-content:center;width:100%}
+.lk{background:none;border:0;color:var(--acao2);font-weight:500;font-size:13px;padding:2px}
+.lk.per{color:var(--perigo)}
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--linha);border-radius:8px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{background:none;border:0;padding:5px 12px;border-radius:6px;font-weight:600;font-size:13px;color:var(--suave)}
+.seg button.on{background:var(--acao);color:#fff}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chips button{background:var(--painel);border:1px solid var(--linha);padding:4px 10px;border-radius:6px;font-weight:600;font-size:11.5px;display:inline-flex;gap:6px;align-items:center}
+.chips button.on{background:var(--acao);border-color:var(--acao);color:#fff}
+.chips i{width:6px;height:6px;border-radius:50%}
+select.c,input.c,textarea.c{background:var(--painel);border:1px solid var(--linha);border-radius:7px;padding:8px 10px;color:var(--texto);font:inherit;font-size:13px;min-width:0;max-width:100%}
+textarea.c{min-height:74px;resize:vertical;width:100%}
+input.c:focus,select.c:focus,textarea.c:focus{border-color:var(--acao);outline:none}
+.bus{position:relative;display:flex;flex:1;min-width:160px}
+.bus svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--fraco)}
+.bus input{padding-left:32px;width:100%}
+.linha{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.linha .fim{margin-left:auto;display:flex;gap:6px;align-items:center}
+.barra{background:var(--painel);border:1px solid var(--linha);border-radius:8px;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.barra .fim{margin-left:auto;display:flex;gap:6px;align-items:center}
+.grp{display:inline-flex;border:1px solid var(--linha);border-radius:7px;background:var(--bg)}
+.grp button{background:none;border:0;padding:7px 8px}
+
+.card{background:var(--painel);border:1px solid var(--linha);border-radius:8px;min-width:0}
+.card>header{padding:16px 18px 4px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.card>header h2{font-size:15px;font-weight:700}
+.card>header p{font-size:12.5px;color:var(--suave);margin-top:2px}
+.pad{padding:14px 18px}
+.grade{display:grid;gap:14px}
+.g2{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)} .g11{grid-template-columns:repeat(2,minmax(0,1fr))} .g3{grid-template-columns:repeat(3,minmax(0,1fr))} .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{background:var(--painel);border:1px solid var(--linha);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:1px;min-width:0;position:relative;transition:transform .15s,border-color .15s}
+.kpi:hover{transform:translateY(-2px);border-color:var(--acaolinha)}
+.kpi .topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.chip{width:24px;height:24px;border-radius:5px;display:grid;place-items:center;flex:none}
+.chip.g{width:30px;height:30px;border-radius:7px;background:var(--acao);color:#fff}
+.var{font-size:11px;font-weight:600;background:var(--painel3);padding:2px 7px;border-radius:5px;color:var(--suave)}
+.kpi b{font-size:17px;font-weight:700}
+.kpi span.r{font-size:12.5px;font-weight:600;color:var(--suave)}
+.kpi .inf{position:absolute;right:12px;bottom:10px;color:var(--fraco)}
+.st3{background:var(--painel);border:1px solid var(--linha);border-radius:8px;padding:14px;display:flex;justify-content:space-between;align-items:center}
+.st3 span{font-size:13px;color:var(--suave)} .st3 b{display:block;font-size:20px} .st3 small{color:var(--suave);font-size:11.5px}
+.st4{background:var(--painel);border:1px solid var(--linha);border-radius:8px;padding:10px 12px}
+.st4 b{font-size:16px} .st4 span{display:block;font-size:11px;color:var(--suave);text-transform:uppercase;font-weight:600;letter-spacing:.03em;margin-top:2px}
+.graf svg{display:block;width:100%;height:auto}
+.graf text{font:11px var(--f);fill:var(--fraco)}
+.hb{display:flex;flex-direction:column;gap:10px}
+.hb div{display:grid;grid-template-columns:100px minmax(0,1fr) 88px;gap:10px;align-items:center;font-size:13px}
+.hb i{display:block;height:8px;border-radius:4px;background:var(--acao)}
+.hb em{font-style:normal;background:var(--painel3);border-radius:4px;display:block}
+.hb b{text-align:right;font-weight:600}
+.tabela{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:10px 14px;text-align:left;border-bottom:1px solid var(--linha);white-space:nowrap}
+th{font-weight:600;color:var(--fraco);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+tbody tr{transition:background .15s} tbody tr:hover{background:var(--painel2)}
+tr:last-child td{border-bottom:0}
+.dir{text-align:right}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;background:var(--painel3);color:var(--suave);white-space:nowrap}
+.pill.ok{background:var(--okfundo);color:var(--ok);border:1px solid #1F5A47} .pill.alerta{background:var(--alertafundo);color:var(--alerta);border:1px solid #6B5318} .pill.perigo{background:var(--perigofundo);color:var(--perigo)} .pill.roxo{background:var(--acaofundo);color:var(--acao2)}
+.vazio{padding:44px 18px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;border:1px dashed var(--linha);border-radius:8px}
+.vazio>svg.i{width:34px;height:34px;color:var(--suave);stroke-width:1.5}
+.vazio b{font-size:15px} .vazio p{color:var(--suave);font-size:13px;max-width:420px}
+.lista .item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--linha)}
+.lista .item:last-child{border-bottom:0}
+.item small{color:var(--suave);font-size:12px;display:block}
+.item .fim{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--suave)}
+.form{display:flex;flex-direction:column;gap:12px}
+.dica{font-size:12px;color:var(--fraco);font-weight:400}
+.aviso{background:var(--acaofundo);border:1px solid var(--acaolinha);border-radius:8px;padding:10px 14px;font-size:13px}
+.op{border:1px solid var(--linha);border-radius:8px;padding:10px 12px;background:var(--bg);text-align:left;display:block;width:100%}
+.op b{display:block;font-size:13px} .op small{color:var(--suave);font-size:12px}
+.op.on{border-color:var(--acao);background:var(--acaofundo)}
+.cx{border:1px solid var(--linha);border-radius:7px;padding:10px 12px;min-width:0}
+.cx small{display:block;font-size:11px;color:var(--fraco);text-transform:uppercase;font-weight:700;letter-spacing:.04em;margin-bottom:6px}
+.cx b{font-size:14px}
+.cx td small{text-transform:none;letter-spacing:0;font-weight:400;margin:0;font-size:12px;color:var(--suave)}
+
+/* chats */
+.chat{display:grid;grid-template-columns:286px minmax(0,1fr) 260px;height:100vh;margin:-20px -20px -40px;background:var(--bg)}
+.chat>div{min-width:0;display:flex;flex-direction:column}
+.fila{border-right:1px solid var(--linha);background:var(--painel)}
+.fila .topo{padding:10px 10px 0;display:flex;flex-direction:column;gap:8px}
+.fila h2{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;display:flex;gap:6px;align-items:center;color:var(--texto)}
+.abas{display:flex;gap:2px;border-bottom:1px solid var(--linha);flex-wrap:wrap}
+.abas button{background:none;border:0;padding:10px 12px;font-weight:600;font-size:13px;color:var(--suave);border-bottom:2px solid transparent;margin-bottom:-1px}
+.abas button.on{color:var(--texto);border-color:var(--acao)}
+.fila .abas{display:grid;grid-template-columns:repeat(3,1fr)} .fila .abas button{font-size:11px;padding:9px 2px}
+.fila .chips{padding:10px;border-bottom:1px solid var(--linha);align-items:center;flex-wrap:nowrap;gap:5px} .fila .chips button{border-radius:99px;font-size:11px;padding:3px 8px;white-space:nowrap}
+.fila .rol{overflow:auto;flex:1}
+.conv{display:flex;gap:9px;padding:10px;border:0;border-bottom:1px solid var(--linha);cursor:pointer;width:100%;background:none;text-align:left}
+.conv:hover,.conv.on{background:var(--painel2)}
+.conv p{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600}
+.conv small{display:block;color:var(--suave);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.fio .topo{padding:10px 16px;border-bottom:1px solid var(--linha);display:flex;align-items:center;gap:10px;background:var(--painel);flex-wrap:wrap}
+.msgs{flex:1;padding:16px;display:flex;flex-direction:column;gap:8px;overflow:auto}
+.m{max-width:74%;padding:8px 12px;border-radius:10px;font-size:13.5px;background:var(--painel);border:1px solid var(--linha);white-space:pre-line}
+.m.eu{align-self:flex-end;background:var(--acaofundo);border-color:var(--acaolinha)}
+.m small{display:block;font-size:11px;color:var(--fraco);margin-top:4px;text-align:right}
+.compor{display:flex;gap:8px;padding:10px;border-top:1px solid var(--linha);background:var(--painel)}
+.compor input{flex:1}
+.ficha{border-left:1px solid var(--linha);padding:14px;gap:14px;overflow:auto;background:var(--painel)}
+.ficha h3{font-size:11px;color:var(--fraco);letter-spacing:.05em;text-transform:uppercase}
+.ficha dl{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;margin:0;font-size:13px}
+.ficha dt{color:var(--suave)} .ficha dd{margin:0;text-align:right}
+.centro{flex:1;display:grid;place-items:center;text-align:center}
+
+/* kanban */
+.kanban{display:grid;grid-auto-flow:column;grid-auto-columns:264px;gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--painel);border:1px solid var(--linha);border-radius:8px;display:flex;flex-direction:column;min-height:440px;transition:border-color .15s,background .15s}
+.col.alvo{border-color:var(--acao);background:var(--acaofundo)}
+.col h3{font-size:13px;font-weight:700;padding:11px 13px;border-bottom:1px solid var(--linha);display:flex;justify-content:space-between;align-items:center;border-top:3px solid var(--cor,var(--acao));border-radius:8px 8px 0 0}
+.col h3 span{font-size:12px;color:var(--suave);font-weight:600}
+.col .tot{font-size:12px;color:var(--suave);padding:6px 13px 0}
+.col .cards{padding:10px;display:flex;flex-direction:column;gap:8px;flex:1}
+.kc{background:var(--bg);border:1px solid var(--linha);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;cursor:grab;transition:transform .15s,border-color .15s,box-shadow .15s}
+.kc:hover{transform:translateY(-2px);border-color:var(--acaolinha);box-shadow:0 6px 16px var(--sombra)}
+.kc.arr{opacity:.4}
+.kc .l1{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.kc .l2{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--suave)}
+.mini{display:flex;gap:4px} .mini span{flex:1;border-top:3px solid var(--cor);background:var(--bg);border-radius:4px;padding:6px 8px;font-size:11.5px}
+
+/* fluxos */
+.duas{display:grid;grid-template-columns:210px minmax(0,1fr)}
+.pastas{border-right:1px solid var(--linha);padding:10px 6px;display:flex;flex-direction:column;gap:2px}
+.pastas button{background:none;border:0;text-align:left;padding:6px 10px;border-radius:5px;font-size:12.5px;font-weight:600;display:flex;gap:8px;align-items:center}
+.pastas button.on{background:var(--acao);color:#fff}
+.fl td:first-child{border-left:2px solid transparent} .fl tr.at td:first-child{border-left-color:var(--ok)}
+.pt{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
+.topoed{background:var(--painel);border:1px solid var(--linha);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.cv{position:relative}
+.canvas{height:620px;background:radial-gradient(circle,var(--painel3) 1px,transparent 1px) 0 0/22px 22px,var(--bg);border:1px solid var(--linha);border-radius:8px;overflow:auto}
+.canvas .inner{position:relative;width:1112px;height:600px}
+.canvas svg.fios{position:absolute;inset:0;width:1112px;height:600px;pointer-events:none}
+.ferr{position:absolute;left:10px;top:10px;z-index:3;width:226px;background:var(--painel);border:1px solid var(--linha);border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:1px;max-height:540px;overflow:auto;box-shadow:0 12px 30px var(--sombra)}
+.ferr button{background:none;border:0;text-align:left;padding:6px 9px;border-radius:6px;display:flex;gap:9px;align-items:center;font-size:12.5px;font-weight:500}
+.ferr button:hover{background:var(--painel2)}
+.ferr button i{width:9px;height:9px;border-radius:3px;flex:none}
+.zoom{position:absolute;left:10px;bottom:10px;z-index:2}
+.no{position:absolute;width:200px;background:var(--painel);border:1px solid var(--linha);border-radius:9px;font-size:12.5px;box-shadow:0 4px 14px var(--sombra)}
+.no header{display:flex;align-items:center;gap:8px;padding:8px 11px;font-weight:700;border-radius:8px 8px 0 0;background:var(--painel2)}
+.no.ini{border:2px solid #22C55E} .no.ini header{background:#22C55E;color:#fff;padding:12px 11px}
+.no header i{width:9px;height:9px;border-radius:3px;background:var(--acao)}
+.no div{padding:8px 11px;color:var(--suave);height:44px;overflow:hidden}
+.no .st{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;height:auto;padding:10px 6px;color:var(--texto)}
+.no .st small{display:block;font-size:11px;color:var(--fraco);font-weight:600;letter-spacing:.04em}
+.no .st b{font-size:14px}
+.no .cnt{font-size:11px;color:var(--fraco);border-top:1px solid var(--linha);padding:6px 11px}
+
+/* agente */
+.ag{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px;align-items:start}
+.migalha{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--suave)}
+.teste{display:flex;flex-direction:column;height:580px}
+.avs{display:flex;gap:8px;flex-wrap:wrap}
+.avs button{width:78px;padding:3px;border-radius:10px;border:2px solid transparent;background:none;display:flex;flex-direction:column;gap:3px;align-items:center;font-size:11px;font-weight:600}
+.avs img{width:68px;height:68px;border-radius:8px;display:block}
+.mas{border-radius:50%;object-fit:cover;flex:none;background:#0B1120}
+.avs button.on{border-color:var(--acao2)}
+
+/* config */
+.cfg{display:grid;grid-template-columns:208px minmax(0,1fr);gap:24px;align-items:start}
+.cfgm{display:flex;flex-direction:column;gap:1px;border-right:1px solid var(--linha);padding-right:10px}
+.cfgm button{background:none;border:0;text-align:left;padding:5px 10px;border-radius:6px;font-size:12.5px;font-weight:500;display:flex;gap:9px;align-items:center;white-space:nowrap}
+.cfgm button:hover{background:var(--painel2)} .cfgm button.on{background:var(--acao);color:#fff;font-weight:600}
+.over{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--fraco);font-weight:600}
+
+/* janela */
+.veu{position:fixed;inset:0;background:#0009;display:grid;place-items:center;z-index:50;padding:16px}
+.jan{background:var(--painel);border:1px solid var(--linha);border-radius:10px;width:min(520px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 60px var(--sombra)}
+.jan.larga{width:min(680px,100%)}
+.jan>header{padding:16px 18px 6px} .jan>header h2{font-size:16px;font-weight:700} .jan>header p{color:var(--suave);font-size:13px;margin-top:3px}
+.jan .corpo{padding:10px 18px 4px;display:flex;flex-direction:column;gap:12px}
+.jan footer{padding:14px 18px;display:flex;justify-content:flex-end;gap:8px}
+.menu{position:fixed;background:var(--painel);border:1px solid var(--linha);border-radius:8px;padding:5px;z-index:60;box-shadow:0 12px 30px var(--sombra);display:flex;flex-direction:column;min-width:190px}
+.menu button{background:none;border:0;text-align:left;padding:7px 10px;border-radius:6px;font-size:13px}
+.menu button:hover{background:var(--painel2)}
+.toast{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--painel3);border:1px solid var(--acaolinha);padding:11px 16px;border-radius:9px;font-size:13px;box-shadow:0 10px 30px var(--sombra);z-index:70;max-width:360px}
+.qr{width:180px;height:180px;background:#fff;border-radius:8px;padding:12px;display:grid;grid-template-columns:repeat(21,1fr);margin:0 auto}
+.qr i{background:#0B1120} .qr i.b{background:transparent}
+.menu-cel{display:none}
+
+@media (max-width:1150px){.chat{grid-template-columns:286px minmax(0,1fr)}.ficha{display:none!important}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.ag{grid-template-columns:1fr}}
+@media (max-width:860px){
+  .app,body.rec .app{grid-template-columns:1fr}
+  .lado{position:fixed;inset:0 auto 0 0;width:210px;z-index:40;transform:translateX(-100%);transition:transform .2s;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+  .lado.aberto{transform:none}
+  .menu-cel{display:inline-flex}
+  main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .g2,.g11,.g3,.cfg,.duas{grid-template-columns:1fr}
+  .cfgm,.pastas{border-right:0}
+  .chat{grid-template-columns:1fr;height:auto;margin:0}
+  .fila{border-right:0;border:1px solid var(--linha);border-radius:8px} .fila .rol{max-height:240px}
+  .fio{min-height:460px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="ouroG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3D27A"/><stop offset=".55" stop-color="#C99A3B"/><stop offset="1" stop-color="#9C7128"/></linearGradient>
+  <mask id="corteN"><rect width="120" height="120" fill="#fff"/><path d="M45 47 L69 85" stroke="#000" stroke-width="2.2"/></mask>
+  <symbol id="simbolo" viewBox="0 0 120 120">
+    <g fill="none" stroke="url(#ouroG)" stroke-width="3.6" stroke-linecap="round"><path d="M55.6 10.2 A50 50 0 0 1 95.4 95.4"/><path d="M55.6 109.8 A50 50 0 0 1 42.9 13"/></g>
+    <g fill="url(#ouroG)"><circle cx="98.3" cy="27.9" r="4.6"/><circle cx="13" cy="77.1" r="4.6"/>
+    <g mask="url(#corteN)"><path d="M33 29 L46 21 L46 87 L33 81 Z"/><path d="M33 21 L48 21 L99 101 L84 101 Z"/><path d="M73 30 L87 24 L87 84 L73 62 Z"/></g></g>
+  </symbol>
+</defs></svg>
+
+<div id="raiz"></div><div id="sobre"></div>
+
+<script>
+(function(){
+const R=document.getElementById('raiz'), SO=document.getElementById('sobre');
+const P={
+ dash:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/>', kanban:'<path d="M6 4v12M12 4v7M18 4v16"/>',
+ contatos:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 15c2.5.2 4.5 2 4.5 5"/>',
+ fluxos:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><path d="M10 6.500h4a3.500 3.500 0 013.500 3.500v4"/>',
+ agentes:'<rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 4v4M9 13v2M15 13v2"/>',
+ conexoes:'<path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 01-10 0zM12 17v4"/>',
+ webhooks:'<circle cx="12" cy="6" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M10.8 8.2L6.5 15.8M13.2 8.2l4.300 7.600M7.500 18h9"/>',
+ disparos:'<path d="M4 12l16-8-6 16-3-7z"/>', facebook:'<path d="M4 10v4h3l6 4V6L7 10zM16 9a4 4 0 010 6M18.500 6.500a8 8 0 010 11"/>',
+ cobranca:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/>',
+ config:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.600 5.600l2.100 2.100M16.300 16.300l2.100 2.100M5.600 18.400l2.100-2.100M16.300 7.700l2.100-2.100"/>',
+ tutoriais:'<circle cx="12" cy="12" r="9"/><path d="M9.500 9.500a2.500 2.500 0 114 2c-1 .7-1.500 1.200-1.500 2.500M12 17v.500"/>',
+ mestre:'<path d="M12 3l8 4v5c0 5-3.500 8-8 9-4.500-1-8-4-8-9V7z"/>', global:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+ mais:'<path d="M12 5v14M5 12h14"/>', busca:'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.500-4.500"/>', filtro:'<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
+ baixa:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>', sobe:'<path d="M12 16V5M7 9l5-5 5 5M5 20h14"/>', relogio:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ agenda:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+ pts:'<circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>', volta:'<path d="M19 12H5M11 6l-6 6 6 6"/>', play:'<path d="M7 5l12 7-12 7z"/>',
+ sol:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.500 1.500M17.500 17.500L19 19M5 19l1.500-1.500M17.500 6.500L19 5"/>', sino:'<path d="M6 16V11a6 6 0 0112 0v5l2 2H4zM10 21h4"/>',
+ seta:'<path d="M6 9l6 6 6-6"/>', dirt:'<path d="M9 6l6 6-6 6"/>', menu:'<path d="M4 7h16M4 12h16M4 17h16"/>', enviar:'<path d="M4 12l16-8-6 16-3-7z"/>', clipe:'<path d="M8 12l6-6a3 3 0 014 4l-8 8a5 5 0 01-7-7l7-7"/>',
+ pasta:'<path d="M3 6h6l2 2h10v11H3z"/>', trofeu:'<path d="M7 4h10v5a5 5 0 01-10 0zM7 6H4c0 3 1 4 3 4M17 6h3c0 3-1 4-3 4M12 14v4M8 20h8"/>',
+ gira:'<path d="M4 12a8 8 0 0114-5l2 2M20 12a8 8 0 01-14 5l-2-2M20 4v5h-5M4 20v-5h5"/>', hist:'<path d="M4 12a8 8 0 108-8 8 8 0 00-6 3M4 4v4h4M12 8v4l3 2"/>', salva:'<path d="M6 3h12v18l-6-4-6 4z"/>', lapis:'<path d="M4 20l1-4L16 5l3 3L8 19z"/>',
+ cifra:'<path d="M12 3v18M16 7c-1-1.500-6-2-7 0s0 3.500 3 4 5 1 4 4-6 2-8 0"/>', sacola:'<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2"/>', check:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
+ carrinho:'<path d="M3 4h3l2 11h10l2-8H7"/><circle cx="9" cy="19" r="1.500"/><circle cx="17" cy="19" r="1.500"/>', gema:'<path d="M6 4h12l3 5-9 11L3 9zM3 9h18"/>', mega:'<path d="M4 10v4h3l6 4V6L7 10z"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.500v.500"/>', rec:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M16 10l-3 2 3 2"/>', casa:'<path d="M4 11l8-7 8 7v9H4z"/>',
+ camadas:'<path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/>', coroa:'<path d="M4 18h16M4 8l4 4 4-7 4 7 4-4-2 10H6z"/>', copia:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3"/>',
+ doc:'<path d="M6 3h9l4 4v14H6zM9 12h6M9 16h6"/>', camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3"/>', carta:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 7 9-7"/>', raio:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>', predio:'<path d="M5 21V4h9v17M14 9h5v12M8 8h3M8 12h3M8 16h3"/>'
+};
+const I=n=>`<svg class="i" viewBox="0 0 24 24">${P[n]||''}</svg>`;
+const N=()=>`<svg class="logo" viewBox="0 0 120 120"><use href="#simbolo"/></svg>`;
+const esc=s=>String(s).replace(/</g,'&lt;');
+
+/* ---------- estado ---------- */
+const S={papel:'mentorado',claro:false,rec:false,dAba:'Vendas',dPer:'Valor',fila:'Aguardando',chip:'Tudo',conv:0,fFiltro:'Todos',ferr:false,agAba:'Foto',agLista:'Agentes',cfg:'equipe',fb:'Gerenciador',kb:0,passo:0,campos:'Customizados',avs:0};
+try{S.papel=localStorage.getItem('nx-papel')||S.papel;S.claro=localStorage.getItem('nx-claro')==='1'}catch(e){}
+const guarda=()=>{try{localStorage.setItem('nx-papel',S.papel);localStorage.setItem('nx-claro',S.claro?'1':'0')}catch(e){}};
+
+/* ---------- dados de exemplo ---------- */
+const convs=[
+ {n:'Maria Rosa',i:'MR',t:'14:32',u:'Quero o 2, como faço?',f:'Aguardando',nl:2,et:'quente'},
+ {n:'Aparecida Lima',i:'AL',t:'13:58',u:'Áudio (0:42)',f:'Aguardando',nl:1,et:''},
+ {n:'Carlos Freitas',i:'CF',t:'13:41',u:'Tem contraindicação pra pressão alta?',f:'Aguardando',nl:0,et:'dúvida'},
+ {n:'José Santana',i:'JS',t:'14:20',u:'Meu CEP é 18045-120',f:'Atendendo',nl:0,et:'pedido'},
+ {n:'Roberto Alves',i:'RA',t:'11:47',u:'Vou pensar e te falo',f:'Atendendo',nl:0,et:''},
+ {n:'Neusa Barbosa',i:'NB',t:'12:10',u:'Obrigada, chegou certinho',f:'Resolvidos',nl:0,et:'cliente'},
+ {n:'Sônia Prado',i:'SP',t:'10:02',u:'Pode mandar o vídeo de novo?',f:'Resolvidos',nl:0,et:''}];
+const contatos=[['Maria Rosa','(19) 9••••-4410','Campinas/SP','Anúncio Meta','Lead','quente'],['José Santana','(15) 9••••-2207','Sorocaba/SP','Anúncio Meta','Cliente','pedido'],['Aparecida Lima','(11) 9••••-9031','Jundiaí/SP','Anúncio Meta','Lead',''],['Carlos Freitas','(19) 9••••-7754','Piracicaba/SP','Indicação','Lead','dúvida'],['Neusa Barbosa','(19) 9••••-1180','Valinhos/SP','Anúncio Meta','Cliente','cliente'],['Roberto Alves','(19) 9••••-6602','Americana/SP','Importado','Lead','']];
+const fluxos=[['Funil Dolomax','Ativo',10,'13/11/2026, 09:14'],['Confirmação de entrega','Ativo',7,'12/11/2026, 23:02'],['Recompra 75 dias','Ativo',6,'11/11/2026, 16:40'],['Recuperação da tabela','Pausado',5,'10/11/2026, 11:25']];
+const blocos=[['Mensagem','#3B82F6'],['Template WhatsApp','#22C55E'],['Etiquetas','#F59E0B'],['Botão PIX','#2DD4BF'],['Menu','#60A5FA'],['Carrossel','#EC4899'],['Aguarda Resposta','#FBBF24'],['Controlador de Chat','#94A3B8'],['Notificação','#F87171'],['Condicional','#38BDF8'],['Distribuidor','#38BDF8'],['Conexão de Fluxo','#34D399'],['Pixel','#3B82F6'],['Intervalo Inteligente','#FB923C'],['Departamento','#94A3B8'],['Integração','#22D3EE'],['Bloco de IA','#C084FC'],['Agente de IA','#C084FC'],['Kanban','#60A5FA'],['Manipulador','#A3A3A3'],['Venda aprovada','#22C55E'],['Pagamento','#2DD4BF'],['Nexus Pay','#E6C36A'],['Ligar','#F87171'],['Integração de imagem por IA','#EC4899']];
+const quadros=[{n:'Funil de vendas',cols:[['Novo','#60A5FA',[['Sônia Prado','Ouvindo áudio 2',0],['Roberto Alves','Recebeu a tabela',0],['Lúcia Matos','Aguardando resposta',0]]],['Qualificação','#FBBF24',[['Maria Rosa','5 meses',497],['Antônio Cruz','1 ano',797],['Carlos Freitas','Dúvida de saúde',0]]],['Ganho','#34D399',[['José Santana','1 ano',797],['Neusa Barbosa','3 meses',397]]]]},
+ {n:'Pedidos e entregas',cols:[['Endereço confirmado','#60A5FA',[['José Santana','Sorocaba',797],['Vera Nunes','Campinas',397]]],['Enviado','#FBBF24',[['Neide Campos','Em trânsito',497],['Cláudio Reis','Em trânsito',397]]],['Entregue e pago','#34D399',[['Neusa Barbosa','Pix na entrega',397],['Ivone Lopes','Cartão 12x',797]]],['Frustrado','#F87171',[['Gilberto Sá','Ausente',497]]]]}];
+const mentorados=[['Ana Paula Moreira','Goiânia','ok',412,38,29,'v3','ok','28/11','Pro'],['Rodrigo Teles','Recife','ok',356,31,22,'v3','ok','21/11','Pro'],['Marcos Vieira','Belo Horizonte','ok',287,24,20,'v2','ok','02/12','Essencial'],['Paulo Henrique Dias','Campinas','ok',244,19,15,'próprio','ok','30/11','Pro'],['Fernanda Luz','Curitiba','perigo',198,12,7,'v3','ok','15/11','Pro'],['Juliana Reis','Fortaleza','ok',91,4,2,'v3','alerta','10/11','Essencial'],['Tatiane Souza','Salvador','perigo',0,0,0,'—','perigo','05/11','Essencial']];
+const brl=v=>'R$ '+v.toLocaleString('pt-BR');
+const masc=[['nex','Nex','Vendedor: tira dúvidas e leva ao pacote'],['lumi','Lumi','Suporte: responde com calma e resolve'],['orbi','Orbi','Entregas: confirma e acompanha o pedido'],['vega','Vega','Qualificadora: pergunta sintomas e encaminha'],['tico','Tico','Recompra: lembra no fim do tratamento'],['atlas','Atlas','Consultor: explica antes de oferecer'],['iris','Íris','Boas-vindas: recebe quem chega do anúncio'],['dara','Dara','Financeiro: cobrança e pagamento'],['astro','Astro','Mentor: orienta a equipe e os mentorados']];
+const mA=()=>masc[S.avs]||masc[0];
+const cores=['#D97706','#6B7280','#2563EB','#0E7490','#7C3AED','#0F766E','#DB2777','#EA580C','#CA8A04','#9333EA'];
+
+/* ---------- gráficos ---------- */
+const area=(v,l,teto,fmt=x=>x)=>{const W=640,H=210,a=52,r=10,t=12,b=26,w=W-a-r,h=H-t-b,x=i=>a+w*i/(v.length-1),y=k=>t+h-h*k/teto,p=v.map((k,i)=>`${x(i).toFixed(1)} ${y(k).toFixed(1)}`),f=v.length-1;
+ return `<div class="graf pad"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de linha">${[0,teto/2,teto].map(g=>`<line x1="${a}" x2="${W-r}" y1="${y(g)}" y2="${y(g)}" stroke="var(--linha)" stroke-dasharray="3 3"/><text x="${a-8}" y="${y(g)+4}" text-anchor="end">${fmt(g)}</text>`).join('')}
+ <path d="M${p.join(' L')} L${x(f)} ${y(0)} L${x(0)} ${y(0)} Z" fill="var(--acao)" opacity=".14"/><path d="M${p.join(' L')}" fill="none" stroke="var(--acao)" stroke-width="2.4" stroke-linejoin="round"/>
+ ${v.map((k,i)=>`<circle cx="${x(i)}" cy="${y(k)}" r="3.2" fill="var(--painel)" stroke="var(--acao)" stroke-width="2"/>`).join('')}
+ ${l.map((s,i)=>`<text x="${x(i)}" y="${H-6}" text-anchor="${i===0?'start':i===f?'end':'middle'}">${s}</text>`).join('')}</svg></div>`};
+const barras=(v,l,teto)=>{const W=420,H=210,a=26,r=8,t=12,b=26,w=W-a-r,h=H-t-b,bw=w/v.length,y=k=>t+h-h*k/teto;
+ return `<div class="graf pad"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de barras">${[0,teto/2,teto].map(g=>`<line x1="${a}" x2="${W-r}" y1="${y(g)}" y2="${y(g)}" stroke="var(--linha)" stroke-dasharray="3 3"/><text x="${a-8}" y="${y(g)+4}" text-anchor="end">${g}</text>`).join('')}
+ ${v.map((k,i)=>`<rect x="${(a+i*bw+bw*.2).toFixed(1)}" y="${y(k).toFixed(1)}" width="${(bw*.6).toFixed(1)}" height="${(h*k/teto).toFixed(1)}" rx="3" fill="var(--ciano)"/>${i%2===0?`<text x="${a+i*bw+bw/2}" y="${H-6}" text-anchor="middle">${l[i]}</text>`:''}`).join('')}</svg></div>`};
+const hb=(l,cor)=>{const mx=Math.max(...l.map(x=>x[1]));return `<div class="hb pad">${l.map(x=>`<div><span>${x[0]}</span><em><i style="width:${(x[1]/mx*100).toFixed(0)}%;background:${cor||'var(--acao)'}"></i></em><b class="num">${x[2]||x[1]}</b></div>`).join('')}</div>`};
+
+/* ---------- peças ---------- */
+const mc=`<button class="bt ic menu-cel" data-a="menu" aria-label="Abrir menu">${I('menu')}</button>`;
+const hd=(ic,t,s,a='')=>`<div class="hd"><div class="tt">${mc}${I(ic)}<div><h1>${t}</h1>${s?`<p>${s}</p>`:''}</div></div><div class="acoes">${a}</div></div>`;
+const seg=(k,ops)=>`<div class="seg" role="tablist">${ops.map(o=>`<button role="tab" data-s="${k}=${o}" class="${S[k]===o?'on':''}">${o}</button>`).join('')}</div>`;
+const chips=(k,ops,pts)=>`<div class="chips">${ops.map((o,j)=>`<button data-s="${k}=${o}" class="${S[k]===o?'on':''}">${pts&&pts[j]?`<i style="background:${pts[j]}"></i>`:''}${o}</button>`).join('')}</div>`;
+const sel=(ops)=>`<select class="c" aria-label="${ops[0]}">${ops.map(o=>`<option>${o}</option>`).join('')}</select>`;
+const bus=(ph)=>`<div class="bus">${I('busca')}<input class="c" placeholder="${ph}" aria-label="${ph}"></div>`;
+let nid=0;
+const campo=(l,ph='',tp='text',dica='')=>{const id='c'+(++nid);return `<label class="f" for="${id}">${l}${tp==='area'?`<textarea class="c" id="${id}" placeholder="${ph}"></textarea>`:Array.isArray(tp)?`<select class="c" id="${id}">${tp.map(o=>`<option>${o}</option>`).join('')}</select>`:`<input class="c" id="${id}" type="${tp}" placeholder="${ph}">`}${dica?`<span class="dica">${dica}</span>`:''}</label>`};
+const jan=(t,s,corpo,ok,msg,larga)=>`<div class="veu" data-a="fechar-fora"><div class="jan ${larga?'larga':''}" role="dialog" aria-modal="true" aria-label="${t}"><header><h2>${t}</h2>${s?`<p>${s}</p>`:''}</header><div class="corpo">${corpo}</div><footer><button class="bt" data-a="fechar">${ok?'Cancelar':'Fechar'}</button>${ok?`<button class="bt pri" data-ok="${msg||ok}">${ok}</button>`:''}</footer></div></div>`;
+const vazio=(ic,t,p,bt,m)=>`<div class="vazio">${I(ic)}<b>${t}</b><p>${p}</p>${bt?`<button class="bt pri" data-m="${m}">${I('mais')}${bt}</button>`:''}</div>`;
+const pts=(ops)=>`<button class="bt ic" style="border:0;background:none" data-menu="${ops}" aria-label="Mais opções">${I('pts')}</button>`;
+const nomesF=fluxos.map(f=>f[0]);
+
+/* ---------- janelas ---------- */
+const M={
+ novaVenda:()=>jan('Nova venda','Registre uma venda manualmente no histórico.',campo('Cliente','Buscar por nome ou telefone')+campo('Produto','',['Dolomax · 3 meses','Dolomax · 5 meses','Dolomax · 1 ano'])+campo('Valor','R$ 0,00')+campo('Instância','',['Vendas 01','Vendas 02'])+campo('Data','','date'),'Registrar venda','Venda registrada no histórico.'),
+ dashCfg:()=>jan('Configurar dashboard','Escolha os blocos que aparecem.',['Indicadores','Vendas por período','Vendas por horário','Vendas por instância','Faturamento por instância','Vendas por estado','Histórico de vendas','Performance dos produtos'].map(x=>`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" checked> ${x}</label>`).join(''),'Salvar','Dashboard atualizado.'),
+ trilha:()=>jan('Trilha de metas','Seu progresso de vendas na plataforma.',`<div class="hb">${[['Primeira venda','100%'],['10 vendas','100%'],['R$ 50 mil','72%'],['R$ 100 mil','36%']].map(x=>`<div><span>${x[0]}</span><em><i style="width:${x[1]}"></i></em><b>${x[1]}</b></div>`).join('')}</div>`),
+ novoChat:()=>jan('Criar novo chat','',campo('Conexão','',['Vendas 01 · (62) 9••••-1180','Vendas 02 · (62) 9••••-3304'])+campo('Buscar cliente por nome, telefone ou e-mail','Digite para buscar contatos existentes')+`<button class="bt" data-m="contatoForm">${I('mais')}Criar novo contato</button>`,'Abrir conversa','Conversa aberta.'),
+ filtrosChat:()=>jan('Filtros de chat','',campo('Responsável','Nome do responsável')+`<span class="dica">Última interação: filtra pelo horário da última mensagem. Informe De e Até (intervalo inclusivo).</span><div class="grade g11">${campo('De','','date')}${campo('Até','','date')}</div>`+campo('CRM','',['Todos os CRMs','Funil de vendas','Pedidos e entregas'])+campo('Etiquetas','',['Todas','quente','pedido','dúvida','cliente'])+campo('Conexões','',['Todas','Vendas 01','Vendas 02'])+campo('Departamentos','',['Todos','Vendas','Pós-venda'])+`<button class="lk" data-t="Filtros limpos." style="align-self:flex-start">Limpar</button>`,'Aplicar','Filtros aplicados.'),
+ agendadas:()=>jan('Mensagens agendadas','',`<div class="lista"><div class="item"><div><b>Ivone Lopes</b><small>“Oi Ivone, seu tratamento está acabando…” · amanhã 09:00</small></div><div class="fim"><button class="bt per" data-t="Agendamento cancelado.">Cancelar</button></div></div><div class="item"><div><b>Neide Campos</b><small>Lembrete de entrega · 14/11 08:00</small></div><div class="fim"><button class="bt per" data-t="Agendamento cancelado.">Cancelar</button></div></div></div>`),
+ novoKanban:()=>jan('Novo Kanban','Dê um nome ao quadro. As colunas padrão já vêm prontas para você começar.',campo('Nome do Kanban','Digite o nome do Kanban...')+`<span class="dica">Visualização</span><div class="mini">${[['Novo','#60A5FA'],['Qualificação','#FBBF24'],['Ganho','#34D399']].map(c=>`<span style="--cor:${c[1]}">${c[0]}</span>`).join('')}</div><span class="dica">3 colunas · Assim o quadro aparece na listagem, com o funil no topo.</span>`,'Criar','Kanban criado com 3 colunas.'),
+ novaColuna:()=>jan('Nova coluna','',campo('Nome da coluna','Ex.: Enviado')+campo('Cor','',['Azul','Amarelo','Verde','Vermelho','Roxo']),'Adicionar','Coluna adicionada.'),
+ novoContato:()=>jan('Novo contato','Digite para buscar contatos existentes',campo('Buscar','Buscar por nome, telefone ou e-mail...')+`<button class="bt" data-m="contatoForm">${I('mais')}Criar novo contato</button>`),
+ contatoForm:()=>jan('Dados do contato','Gerencie e organize seus contatos',`<button class="lk" data-m="novoContato" style="align-self:flex-start">← Voltar à busca</button>`+campo('Nome completo','Nome completo')+campo('E-mail','Digite o e-mail do contato','email')+`<div class="grade" style="grid-template-columns:130px minmax(0,1fr)">${campo('País','',['+55 Brasil','+351 Portugal','+1 EUA'])}${campo('Telefone','8599999999','tel','DDD + número (10 ou 11 dígitos)')}</div>`+campo('Etiquetas','',['Nenhuma','quente','pedido','dúvida','cliente'])+`<span class="dica">Endereço: estado, cidade e CEP do contato</span><div class="grade g3">${campo('Estado','')}${campo('Cidade','')}${campo('CEP','00000-000')}</div><span class="dica">Campos customizados: adicione campos personalizados para este contato</span><button class="bt" data-t="Campo personalizado adicionado." style="align-self:flex-start">${I('mais')}Adicionar campo</button><button class="bt" data-ok="Contato salvo e conversa aberta." style="align-self:flex-start">Salvar e abrir conversa</button>`,'Salvar contato','Contato salvo.',1),
+ importarCsv:()=>jan('Importar contatos via CSV','Baixe a planilha modelo, preencha e envie o CSV. Etiquetas ficam no contato; ao abrir chat, copiam para a conversa.',campo('Etiquetas padrão (opcional)','',['Selecione etiquetas para todos os contatos…','quente','cliente'],'Aplicadas quando a linha do CSV não tiver etiquetas. Etiquetas do CSV têm prioridade.')+`<button class="op" data-t="No sistema real, a planilha modelo é baixada aqui."><b>Baixar planilha modelo</b><small>Arquivo com colunas e exemplos para facilitar a importação.</small></button><button class="op" data-t="No sistema real, abre a escolha do arquivo."><b>Selecionar CSV para importar</b><small>Formato aceito: .csv</small></button>`),
+ recentes:()=>jan('Exportações recentes','Mostramos as 3 exportações mais recentes. Ao exportar de novo, a mais antiga some da lista. Baixe o CSV se ainda precisar.',`<div class="lista"><div class="item"><div><b>contatos-2026-11-12.csv</b><small>6 contatos · 12/11 18:40</small></div><div class="fim"><button class="bt" data-t="No sistema real, o arquivo é baixado aqui.">${I('baixa')}Baixar</button></div></div></div>`),
+ filtrosContato:()=>jan('Filtros de contatos','',campo('Etiquetas','',['Todas','quente','pedido','cliente'])+campo('Conexão','',['Todas','Vendas 01','Vendas 02'])+`<div class="grade g11">${campo('Criado de','','date')}${campo('Até','','date')}</div>`+campo('Estado','',['Todos','SP','MG','GO','PR','BA']),'Aplicar','Filtros aplicados.'),
+ importarFluxo:()=>jan('Importar Fluxo(s)','Digite o(s) código(s) do(s) fluxo(s) que você deseja importar. Você pode importar múltiplos fluxos separando os códigos por vírgula ou quebra de linha.',campo('Códigos','Exemplo: 123, 456, 789 ou um código por linha','area'),'Importar','Fluxo importado para a sua conta.'),
+ novaPasta:()=>jan('Nova pasta','Organize seus fluxos em pastas.',campo('Nome da pasta','Ex.: Dolomax'),'Criar','Pasta criada.'),
+ compartilhar:()=>jan('Compartilhar fluxo','Quem tiver este código pode importar uma cópia do fluxo.',`<div class="aviso num" style="font-weight:600;overflow-wrap:anywhere">a1b2c3d4-0000-4000-8000-exemplo00001</div><button class="bt" data-copia="a1b2c3d4-0000-4000-8000-exemplo00001" style="align-self:flex-start">${I('copia')}Copiar código</button>`),
+ traduzir:()=>jan('Traduzir fluxo','Funil Dolomax',campo('Idioma do funil','',['English (United States) USD','English (United Kingdom) GBP','Español (LATAM neutral) USD','Español (México) MXN','Español (Argentina) ARS','Português (Portugal) EUR','Français (France) EUR','Italiano (Italia) EUR','Deutsch (Deutschland) EUR'])+['Texto (sempre incluso)','Áudio','Imagem','PDF'].map((x,i)=>`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${i===0?'checked disabled':''}> ${x}</label>`).join('')+`<span class="dica">Títulos de botão, PIX e venda registrada em real não convertem. Ajuste esses valores na cópia.</span><div class="aviso">20 créditos · Texto 16 · Áudio 0 · Imagem 0 · PDF 0</div>`,'Traduzir','Cópia traduzida criada.'),
+ assistente:()=>jan('Assistente de fluxo','O que você quer construir neste fluxo? Conte o resultado que busca e ele monta no canvas.',['Montar boas-vindas com menu de opções','Adicionar cobrança PIX depois da escolha do plano','Reorganizar o canvas e ligar os caminhos que faltam','Criar uma imagem de capa para a mensagem de boas-vindas'].map(x=>`<button class="op" data-ok="O assistente montou os blocos no canvas."><b>${x}</b></button>`).join('')+campo('Ou descreva','Descreva o que você quer','area'),'Enviar','O assistente montou os blocos no canvas.'),
+ nexusPay:()=>jan('Converter fluxo para Nexus Pay','Este fluxo não tem bloco Pagamento. Não há integração de pagamento ativa nesta conta.',`<button class="bt" data-t="No sistema real, abre a configuração de pagamento." style="align-self:flex-start">Configurar</button>`,'Migrar','Fluxo convertido.'),
+ simular:()=>jan('Simulador','Teste o fluxo sem enviar nada no WhatsApp.',`<div class="msgs" style="background:var(--bg);border-radius:8px;height:280px;padding:12px;flex:none"><div class="m">Oi, vi o anúncio</div><div class="m eu">▶ Áudio 1 (1:12)<small>bloco Mensagem</small></div><div class="m eu">Me conta: onde é a sua dor e há quanto tempo?<small>bloco Aguarda Resposta · 20 min</small></div></div>`+campo('Sua resposta de teste','Digite como se fosse o cliente'),'Enviar','Resposta enviada ao simulador.',1),
+ modelosAg:()=>jan('Modelos de agente','Comece de um agente pronto e ajuste.',`<div class="grade g11">${masc.map(m=>`<button class="op" style="display:flex;gap:10px;align-items:center" data-ok="Modelo ${m[1]} aplicado ao novo agente."><img class="mas" style="width:42px;height:42px" src="mascotes/${m[0]}.jpg" alt=""><span><b>${m[1]}</b><small>${m[2]}</small></span></button>`).join('')}</div>`),
+ criarIA:()=>jan('Criar com IA','Descreva o agente e a plataforma monta as instruções.',campo('Como é o seu negócio e o que o agente deve fazer?','Ex.: vendo Dolomax com pagamento na entrega; o agente tira dúvidas e leva para o pacote de 5 meses','area'),'Criar agente','Agente criado. Revise as instruções.'),
+ importarAg:()=>jan('Importar agente','Cole o código do agente compartilhado.',campo('Código','Código do agente'),'Importar','Agente importado.'),
+ habilidade:()=>jan('Nova habilidade','Descreve a situação e escolhe o que ele faz.',campo('Quando','Ex.: o cliente escolheu um pacote','area')+campo('O agente faz','',['Disparar um fluxo','Adicionar etiqueta','Mover no Kanban','Avisar um atendente','Usar ferramenta externa'])+campo('Qual','',nomesF),'Salvar','Habilidade adicionada.'),
+ followup:()=>jan('Novo follow-up','O agente chama sozinho se o lead ficar em silêncio. Até 5.',campo('Depois de','',['30 minutos','2 horas','1 dia','3 dias'])+campo('Orientação','Ex.: retomar perguntando se ficou alguma dúvida sobre os pacotes','area'),'Salvar','Follow-up adicionado.'),
+ novaConexao:()=>jan('Nova Conexão','Gerencie suas conexões WhatsApp',campo('Nome da Conexão *','Ex: WhatsApp Vendas')+`<div class="aviso"><b>Próximos passos:</b><br>• O cadastro nasce só com o nome, sem API<br>• No Conectar, você escolhe API Web (QR Code), API Oficial Cloud ou API Oficial Coex</div>`,'Criar Conexão','Conexão criada. Clique em Conectar.'),
+ conectar:()=>{let q='';for(let k=0;k<441;k++){const x=k%21,y=Math.floor(k/21),f=(x<7&&y<7)||(x>13&&y<7)||(x<7&&y>13),b=f&&((x%14===0||x%14===6||y%14===0||y%14===6)||((x%14)>1&&(x%14)<5&&(y%14)>1&&(y%14)<5));q+=`<i class="${(f?b:((x*7+y*13+x*y)%5<2))?'':'b'}"></i>`}
+  return jan('Conectar WhatsApp','Escolha como este número se conecta.',`<div class="grade g3"><button class="op on"><b>API Web</b><small>QR Code, sem custo por conversa</small></button><button class="op" data-t="No sistema real, abre o cadastro na Meta."><b>API Oficial Cloud</b><small>Meta, sem risco de bloqueio</small></button><button class="op" data-t="No sistema real, abre o cadastro na Meta."><b>API Oficial Coex</b><small>Oficial + app no celular</small></button></div><div class="qr" aria-label="QR Code de exemplo">${q}</div><p class="dica" style="text-align:center">Abra o WhatsApp → Aparelhos conectados → Conectar um aparelho. O código se renova a cada 30 s.</p>`,'',null,1)},
+ novoWebhook:()=>jan('Novo webhook','Cada webhook tem a sua conexão e o seu mapeamento de campos.',campo('Nome','Ex.: Transportadora')+campo('Conexão','',['Vendas 01','Vendas 02'])+campo('Fluxo que dispara','',nomesF)+`<span class="dica">Mapeamento</span><div class="grade g11">${campo('Campo do telefone','telefone')}${campo('Campo do nome','nome')}</div>`,'Criar webhook','Webhook criado. A URL aparece na lista.'),
+ novoDisparo:()=>{const p=S.passo;const corpo=[`<div class="aviso">Disparar um novo fluxo cancela qualquer fluxo em andamento para o mesmo lead.</div><b>Dados do disparo em massa</b>`+campo('Nome (opcional)','Ex.: Recompra novembro')+campo('Início do agendamento','','datetime-local')+`<b>Números e fluxos</b><span class="dica">Adicione vários números (oficiais ou não). O disparo alterna entre eles com o fluxo de cada um.</span><span class="over">Alvo 1</span><div class="grade g11">${campo('Número de envio','',['Vendas 01','Vendas 02'])}${campo('Fluxo','',nomesF)}</div><button class="bt" data-t="Número adicionado." style="align-self:flex-start">${I('mais')}Adicionar número</button>`,
+   campo('Ritmo de envio','',['Seguro · 1 a cada 40–90 s','Moderado · 1 a cada 20–40 s'])+`<div class="grade g11">${campo('Enviar das','','time')}${campo('Até','','time')}</div>`+campo('Limite por dia e por número','100','number'),
+   campo('Público','',['Etiqueta: cliente','Etiqueta: quente','Coluna do Kanban: Ganho','Lista CSV'])+`<div class="aviso"><b>34 contatos</b> neste público.</div>`][p];
+  return `<div class="veu" data-a="fechar-fora"><div class="jan larga" role="dialog" aria-modal="true" aria-label="Novo disparo em massa"><header><h2>Novo disparo em massa</h2><p>Configure número, fluxo, ritmo e o público. A cota do ciclo vale para todos os disparos em massa.</p></header><div class="corpo"><div class="abas">${['Dados','Configurações','Público'].map((x,k)=>`<button class="${k===p?'on':''}" data-passo="${k}">${x}</button>`).join('')}</div>${corpo}</div><footer><button class="bt" data-a="fechar">Cancelar</button>${p<2?`<button class="bt pri" data-passo="${p+1}">Próximo</button>`:`<button class="bt pri" data-ok="Disparo agendado para 34 contatos.">Agendar disparo</button>`}</footer></div></div>`},
+ trocarCartao:()=>jan('Trocar cartão','',`<div class="aviso">No sistema real, esta janela abre o formulário seguro do provedor de pagamento.</div>`),
+ instancias:()=>jan('Comprar mais instâncias','Cada instância é uma conexão de WhatsApp.',campo('Quantidade','1','number')+`<div class="aviso">O valor entra na próxima fatura, proporcional aos dias restantes.</div>`,'Continuar','No sistema real, segue para o pagamento.'),
+ plano:()=>jan('Alterar plano na renovação','A troca vale a partir do próximo vencimento.',[['Essencial','1 WhatsApp · funis-modelo'],['Pro','2 WhatsApp · agente de IA · disparos']].map((x,k)=>`<button class="op ${k===1?'on':''}" data-ok="Plano alterado para a próxima renovação."><b>${x[0]}</b><small>${x[1]}</small></button>`).join('')),
+ cancelar:()=>jan('Cancelar assinatura','Sua conta segue ativa até o fim do período pago.',campo('Motivo','',['Escolha um motivo','Parei de vender','Preço','Faltou recurso','Outro']),'Confirmar cancelamento','No sistema real, o cancelamento seria agendado.'),
+ creditos:()=>jan('Adicionar créditos de IA','Compra avulsa, vale para a conta inteira, separada da assinatura.',['1.000 créditos','5.000 créditos','20.000 créditos'].map(x=>`<button class="op" data-ok="No sistema real, segue para o pagamento."><b>${x}</b></button>`).join('')),
+ extras:()=>jan('Comprar disparos extras','Pacote fechado. Entra no saldo extra e não mexe na cota do mês.',`<div class="aviso">No sistema real, segue para o pagamento por Pix ou cartão.</div>`),
+ convidar:()=>jan('Convidar membro','O convite chega por e-mail.',campo('E-mail','pessoa@empresa.com','email')+campo('Função','',['Atendente','Gerente','Administrador'])+campo('Departamento','',['Sem departamento','Vendas','Pós-venda']),'Enviar convite','Convite enviado.'),
+ suporte:()=>jan('Suporte','Fale com a equipe da mentoria.',campo('Assunto','',['Dúvida','Problema técnico','Financeiro'])+campo('Mensagem','Descreva o que aconteceu','area')+`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox"> Liberar acesso temporário à minha conta para o suporte</label>`,'Enviar','Chamado aberto.'),
+ indicar:()=>jan('Afiliação','Indique o Nexus CRM Pro e ganhe comissão.',`<div class="aviso num" style="font-weight:600">nexuscrmpro.com.br/i/ana-paula</div><button class="bt" data-copia="nexuscrmpro.com.br/i/ana-paula" style="align-self:flex-start">${I('copia')}Copiar link</button><div class="grade g3"><div class="cx"><small>Indicados</small><b>3</b></div><div class="cx"><small>Ativos</small><b>2</b></div><div class="cx"><small>Comissão do mês</small><b>R$ 139</b></div></div>`),
+ notifs:()=>jan('Notificações','',`<div class="lista">${[['Pedido novo: Maria Rosa','5 meses · há 4 min'],['Conexão “Vendas 02” desconectada','há 1 h'],['Funil Dolomax atualizado para a v3','ontem']].map(x=>`<div class="item"><div><b>${x[0]}</b><small>${x[1]}</small></div></div>`).join('')}</div>`),
+ empresa:()=>jan('Trocar de empresa','',`<button class="op on"><b>Ana Paula Moreira</b><small>Leads: 1.284</small></button><button class="op" data-ok="Empresa trocada."><b>AP Suplementos (filial)</b><small>Leads: 212</small></button><button class="bt" data-t="No sistema real, abre o cadastro de nova conta." style="align-self:flex-start">${I('mais')}Nova Conta</button>`),
+ generica:(t,s,campos,ok,msg)=>jan(t,s,campos.map(c=>campo(...c)).join(''),ok,msg)
+};
+
+/* ---------- telas ---------- */
+const T={};
+const tiles=l=>`<div class="grade g4">${l.map(k=>`<div class="kpi"><div class="topo"><i class="chip" style="color:${k[3]};background:${k[3]}22">${I(k[4])}</i><span class="var">${k[5]>=0?'↗':'↘'} ${Math.abs(k[5]).toFixed(1).replace('.',',')}%</span></div><b class="num" style="color:${k[2]||'inherit'}">${k[1]}</b><span class="r">${k[0]}</span><span class="inf">${I('info')}</span></div>`).join('')}</div>`;
+const dias=['07/11','08/11','09/11','10/11','11/11','12/11','13/11'];
+
+T.dashboard=()=>`<div class="barra" style="justify-content:space-between"><div style="display:flex;gap:10px;align-items:center">${mc}<div><h1 style="font-size:15px">Bom dia, Ana Paula! ☕</h1><p class="suave" style="font-size:12.500px;margin-top:2px">Operação <b class="roxo">Ana Paula Moreira</b> • <b style="color:var(--texto)">1.284</b> leads acumulados</p></div></div><button class="bt" data-m="trilha">${I('trofeu')}Trilha de metas</button></div>
+ <div class="barra">${seg('dAba',['Vendas','Atendimento'])}${sel(['Últimos 7 dias','Hoje','Ontem','Últimos 30 dias','Este mês'])}${sel(['Todas as conexões','Vendas 01','Vendas 02'])}${sel(['Todos os produtos','Dolomax · 3 meses','Dolomax · 5 meses','Dolomax · 1 ano'])}<div class="fim">${sel(['BRL','USD','EUR'])}<div class="grp"><button data-t="Filtros redefinidos." aria-label="Redefinir">${I('hist')}</button><button data-t="Visão salva." aria-label="Salvar visão">${I('salva')}</button><button data-t="Dados atualizados." aria-label="Atualizar">${I('gira')}</button><button data-m="dashCfg" aria-label="Configurar">${I('config')}</button></div></div></div>`+
+ (S.dAba==='Vendas'? tiles([['Leads novos','1.284','','#60A5FA','contatos',18],['Faturamento','R$ 36.187,00','var(--ciano)','#2DD4BF','cifra',12.4],['Vendas','71','','#38BDF8','sacola',9.2],['ROAS','3.84','var(--alerta)','#FBBF24','trofeu',4.1],['Taxa de Conversão','5.53%','','#34D399','check',0.6],['Ticket médio','R$ 509,68','','#38BDF8','carrinho',2.9],['Lucro','R$ 18.250,00','var(--ok)','#34D399','gema',15.3],['Gasto Meta (Ad)','R$ 9.420,00','var(--perigo)','#F87171','mega',-3.2]])+
+ `<div class="grade g2"><div class="card"><header><div><h2>Vendas por período</h2><p>Histórico temporal das conversões e faturamento</p></div>${seg('dPer',['Valor','Qtd'])}</header>${S.dPer==='Valor'?area([4076,4587,5097,5607,5097,6116,5607],dias,8000,g=>g?('R$ '+g/1000+' mil'):'0'):area([8,9,10,11,10,12,11],dias,14)}</div>
+ <div class="card"><header><div><h2>Vendas por horário</h2><p>Total de vendas do período filtrado, por hora do dia</p></div></header>${barras([1,2,4,6,7,8,5,4,6,7,6,5,4,4,2],['06h','07h','08h','09h','10h','11h','12h','13h','14h','15h','16h','17h','18h','19h','20h'],8)}</div></div>
+ <div class="grade g3"><div class="card"><header><div><h2>Vendas por instância</h2><p>Operações por conexão ativa</p></div></header>${hb([['Vendas 01',44],['Vendas 02',27]])}</div>
+ <div class="card"><header><div><h2>Faturamento por instância</h2><p>Receita por conexão ativa</p></div></header>${hb([['Vendas 01',22410,'R$ 22.410'],['Vendas 02',13777,'R$ 13.777']],'var(--ciano)')}</div>
+ <div class="card"><header><div><h2>Vendas por estado</h2><p>Distribuição geográfica das vendas</p></div></header>${hb([['SP',31],['MG',14],['GO',11],['PR',8],['BA',7]],'var(--azul)')}</div></div>
+ <div class="card"><header><div><h2>Histórico de vendas</h2><p>Auditoria e emissão fiscal de notas</p></div><div class="acoes"><button class="bt" data-t="Exportação gerada.">${I('baixa')}Exportar CSV</button><button class="bt pri" data-m="novaVenda">${I('mais')}Nova venda</button></div></header>
+ <div class="tabela"><table><thead><tr><th>Instância</th><th>Nº da instância</th><th>Nº do lead</th><th>Cliente (nome)</th><th>Produto</th><th>Valor</th><th>Moeda</th><th>Data</th><th>NF</th><th>Ações</th></tr></thead><tbody>${[['Vendas 01','(62) 9••••-1180','(19) 9••••-1180','Neusa Barbosa','3 meses',397,'13/11 12:10'],['Vendas 02','(62) 9••••-3304','(19) 9••••-5521','Ivone Lopes','1 ano',797,'13/11 10:48'],['Vendas 01','(62) 9••••-1180','(15) 9••••-2207','José Santana','1 ano',797,'12/11 17:32'],['Vendas 01','(62) 9••••-1180','(19) 9••••-8840','Vera Nunes','3 meses',397,'12/11 15:05']].map(v=>`<tr><td>${v[0]}</td><td class="num suave">${v[1]}</td><td class="num">${v[2]}</td><td>${v[3]}</td><td>${v[4]}</td><td class="num">${brl(v[5])}</td><td class="suave">BRL</td><td class="num suave">${v[6]}</td><td><span class="pill">pendente</span></td><td>${pts('Ver venda|Emitir NF|Estornar')}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="card"><header><div><h2>Performance dos produtos</h2><p>Participação no total</p></div>${seg('dPer',['Valor','Qtd'])}</header>${S.dPer==='Valor'?hb([['3 meses',11910,'R$ 11.910'],['5 meses',13916,'R$ 13.916'],['1 ano',10361,'R$ 10.361']]):hb([['3 meses',30],['5 meses',28],['1 ano',13]])}</div>`
+ : tiles([['Chats aguardando','3','','#FBBF24','chat',-8],['Em atendimento','2','','#60A5FA','contatos',5],['Resolvidos','41','var(--ok)','#34D399','check',12],['Tempo até a 1ª resposta','38 s','','#38BDF8','relogio',-21]])+
+ `<div class="grade g11"><div class="card"><header><div><h2>Atendimentos por pessoa</h2><p>Conversas resolvidas no período</p></div></header>${hb([['Robô (fluxo)',1196],['Ana Paula',52],['Bruno',36]])}</div><div class="card"><header><div><h2>Conversas por dia</h2><p>Entradas no período</p></div></header>${area([142,168,155,190,201,224,204],dias,250)}</div></div>`);
+
+T.chats=()=>{
+ const l=convs.filter(c=>c.f===S.fila&&(S.chip==='Tudo'||c.nl>0)); const c=S.conv===null?null:convs[S.conv];
+ return `<div class="chat"><div class="fila"><div class="topo"><h2>${mc}<span class="roxo">${I('chat')}</span>Ana Paula Moreira</h2><div style="display:flex;gap:6px">${bus('Buscar chats...')}<button class="bt ic pri" data-m="novoChat" aria-label="Criar novo chat">${I('mais')}</button><button class="bt ic pri" data-m="filtrosChat" aria-label="Filtros">${I('filtro')}</button></div>
+ <div class="abas">${['Aguardando','Atendendo','Resolvidos'].map(x=>`<button class="${S.fila===x?'on':''}" data-s="fila=${x}">${x}</button>`).join('')}</div></div>
+ <div class="chips">${['Tudo','Não lidas','Não respondidas'].map(o=>`<button data-s="chip=${o}" class="${S.chip===o?'on':''}">${o}</button>`).join('')}<button class="bt ic" style="margin-left:auto;padding:4px 6px;border-radius:6px" data-m="agendadas" aria-label="Mensagens agendadas">${I('agenda')}</button></div>
+ <div class="rol">${l.length?l.map(x=>{const k=convs.indexOf(x);return `<button class="conv ${k===S.conv?'on':''}" data-conv="${k}"><span class="av" style="background:${cores[k%10]}">${x.i}</span><span style="min-width:0;flex:1"><p><span>${x.n}</span><span class="suave num" style="font-weight:400;font-size:11px">${x.t}</span></p><small>${x.u}</small>${x.nl?`<span class="pill roxo" style="margin-top:4px">${x.nl} não lida${x.nl>1?'s':''}</span>`:''}</span></button>`}).join(''):`<div style="padding:50px 16px;text-align:center"><span class="suave">${I('chat')}</span><p style="font-weight:600;margin-top:8px">Nenhum chat encontrado</p><p class="suave" style="font-size:13px">Tente ajustar os filtros de busca</p></div>`}</div></div>
+ ${c?`<div class="fio"><div class="topo"><span class="av" style="background:${cores[S.conv%10]}">${c.i}</span><div><b>${c.n}</b><small class="suave" style="display:block;font-size:12px">Vendas 01 · veio do anúncio “Vídeo depoimento joelho”</small></div><div class="acoes" style="margin-left:auto"><button class="bt" data-t="Conversa assumida. O robô pausou neste chat.">Atender</button><button class="bt" data-t="Conversa resolvida.">Resolver</button>${pts('Transferir para departamento|Disparar fluxo|Agendar mensagem|Adicionar etiqueta|Mover no Kanban|Ativar agente de IA|Bloquear contato')}</div></div>
+ <div class="msgs" id="msgs"><div class="m">Oi, vi o anúncio. Tenho dor no joelho faz 3 anos<small>14:02</small></div><div class="m eu">▶ Áudio (1:12)<small>14:02 · fluxo</small></div><div class="m eu">▶ Áudio (0:58)<small>14:21 · fluxo</small></div><div class="m eu"><b>RESUMO DO SEU TRATAMENTO</b>
+Você só paga quando receber em casa · Garantia de 90 dias
+
+1️⃣ <b>3 MESES</b>: 4 frascos · <b>R$ 397</b>
+2️⃣ <b>5 MESES</b>: 6 frascos · <b>R$ 497</b>
+3️⃣ <b>1 ANO</b>: 13 frascos · <b>R$ 797</b>
+
+Qual você quer iniciar hoje? Responda 1, 2 ou 3<small>14:29 · fluxo</small></div><div class="m">${esc(c.u)}<small>${c.t}</small></div></div>
+ <form class="compor" id="fMsg"><button type="button" class="bt ic" data-menu="Imagem|Vídeo|Áudio gravado|Documento|Resposta rápida ( / )" aria-label="Anexar">${I('clipe')}</button><input class="c" id="msg" placeholder="Digite uma mensagem ou / para respostas rápidas" aria-label="Mensagem"><button class="bt pri ic" aria-label="Enviar">${I('enviar')}</button></form></div>
+ <div class="ficha"><h3>Contato</h3><dl><dt>Telefone</dt><dd class="num">(19) 9••••-4410</dd><dt>Cidade</dt><dd>Campinas/SP</dd><dt>Origem</dt><dd>Anúncio Meta</dd><dt>Responsável</dt><dd>Robô</dd></dl><h3>Etiquetas</h3><div class="acoes">${c.et?`<span class="pill roxo">${c.et}</span>`:''}<button class="bt" data-t="Etiqueta adicionada.">${I('mais')}Etiqueta</button></div><h3>Campos</h3><dl><dt>sintomas</dt><dd>Joelho, 3 anos</dd><dt>pedido</dt><dd>2</dd></dl><h3>CRM</h3><span class="pill alerta" style="align-self:flex-start">Qualificação</span><button class="bt" data-m="novaVenda">Registrar venda</button></div>`
+ :`<div class="centro" style="grid-column:2 / -1"><div><span class="chip g" style="width:64px;height:64px;margin:0 auto 14px;background:var(--painel3);color:var(--suave)">${I('chat')}</span><h2 style="font-size:16px">Selecione um chat</h2><p class="suave" style="font-size:13px;margin-top:4px">Escolha uma conversa na lista para começar a atender</p></div></div>`}</div>`};
+
+T.kanban=()=>hd('kanban','Kanbans','Pipeline de vendas e gestão visual',`<button class="bt pri" data-m="novoKanban">${I('mais')}Novo Kanban</button>`)+
+ `<div class="grade g11">${quadros.map((q,k)=>`<div class="card pad form"><div class="mini">${q.cols.map(c=>`<span style="--cor:${c[1]}"><b>${c[2].length}</b> ${c[0]}</span>`).join('')}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-size:15px">${q.n}</b><small class="suave" style="display:block;font-size:12px">${q.cols.length} colunas · ${q.cols.reduce((a,c)=>a+c[2].length,0)} cards</small></div><div class="acoes"><a class="bt pri" href="#quadro" data-kb="${k}">Abrir</a>${pts('Renomear|Duplicar|Excluir')}</div></div></div>`).join('')}</div>`;
+T.quadro=()=>{const q=quadros[S.kb];return hd('kanban',q.n,'Arraste os cards entre as colunas',`<a class="bt" href="#kanban">${I('volta')}Voltar</a><button class="bt" data-m="novaColuna">${I('mais')}Coluna</button><button class="bt pri" data-m="generica:Novo card||Contato,Buscar contato;Valor,R$ 0|Criar|Card criado.">${I('mais')}Novo card</button>`)+
+ `<div class="linha">${bus('Buscar card...')}${sel(['Todas as etiquetas','quente','pedido','cliente'])}${sel(['Todos os responsáveis','Robô','Ana Paula','Bruno'])}</div>
+ <div class="kanban">${q.cols.map(c=>`<div class="col" style="--cor:${c[1]}"><h3>${c[0]}<span class="n">${c[2].length}</span></h3><p class="tot num">${brl(c[2].reduce((a,k)=>a+k[2],0))}</p><div class="cards">${c[2].map(k=>`<div class="kc"><div class="l1"><span>${k[0]}</span><span class="num">${k[2]?brl(k[2]):''}</span></div><div class="l2"><span>${k[1]}</span>${pts('Abrir conversa|Editar card|Registrar venda|Excluir')}</div></div>`).join('')}</div></div>`).join('')}</div>`};
+
+T.contatos=()=>hd('contatos','Contatos','6 contatos • 2 ativos • 4 leads',`<button class="bt" data-m="filtrosContato">${I('filtro')}Filtros</button><button class="bt" data-m="recentes">${I('hist')}Recentes</button><button class="bt" data-t="Exportação gerada. Veja em Recentes.">${I('baixa')}Exportar CSV</button><button class="bt" data-m="importarCsv">${I('sobe')}Importar CSV</button><button class="bt pri" data-m="novoContato">${I('mais')}Novo Contato</button>`)+
+ `<div class="linha"><div style="flex:0 1 470px;display:flex">${bus('Buscar contato...')}</div><div class="fim">${sel(['Todos os status','Lead','Cliente'])}${sel(['Todas as origens','Anúncio Meta','Indicação','Importado'])}</div></div>
+ <div class="card tabela"><table><thead><tr><th>Contato</th><th>Telefone</th><th>Cidade</th><th>Origem</th><th>Status</th><th>Etiquetas</th><th>Ações</th></tr></thead><tbody>${contatos.map((c,k)=>`<tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av" style="background:${cores[k%10]}">${c[0].split(' ').map(x=>x[0]).join('')}</span><b style="font-weight:600">${c[0]}</b></span></td><td class="num">${c[1]}</td><td class="suave">${c[2]}</td><td class="suave">${c[3]}</td><td><span class="pill ${c[4]==='Cliente'?'ok':''}">${c[4]}</span></td><td>${c[5]?`<span class="pill roxo">${c[5]}</span>`:''}</td><td>${pts('Abrir conversa|Editar|Disparar fluxo|Excluir')}</td></tr>`).join('')}</tbody></table></div>`;
+
+T.fluxos=()=>{const l=fluxos.filter(f=>S.fFiltro==='Todos'||(S.fFiltro==='Ativos'?f[1]==='Ativo':f[1]==='Pausado'));
+ return hd('fluxos','Fluxos','Automações e fluxos de atendimento',`<a class="bt pri" href="#fluxo-editor">${I('mais')}Novo fluxo</a><button class="bt" data-m="novaPasta">${I('pasta')}Pasta</button><button class="bt" data-m="importarFluxo">${I('baixa')}Importar</button>`)+
+ `<div class="linha">${bus('Buscar fluxos…')}</div><div class="linha">${chips('fFiltro',['Todos','Ativos','Pausados'],[null,'#22C55E','#EF4444'])}<div class="fim">${pts('Ver arquivados|Ordenar por nome|Ordenar por data')}</div></div>
+ <div class="card duas"><div class="pastas"><span class="over" style="padding:2px 10px 6px">Pastas</span><button class="on">${I('casa')}Sem pasta</button><button data-t="Pasta aberta.">${I('pasta')}Modelos da mentoria</button></div>
+ <div><p style="padding:14px 18px 6px;font-weight:600">Sem pasta</p><div class="tabela"><table class="fl"><thead><tr><th>Nome</th><th>Status</th><th>Blocos</th><th>Atualizado</th><th></th></tr></thead><tbody>${l.map(f=>`<tr class="${f[1]==='Ativo'?'at':''}"><td><a href="#fluxo-editor"><i class="pt" style="background:${f[1]==='Ativo'?'#22C55E':'#EF4444'}"></i><b>${f[0]}</b></a></td><td><span class="pill ${f[1]==='Ativo'?'ok':'perigo'}">● ${f[1].toUpperCase()}</span></td><td class="num"><span class="roxo">✧</span> ${f[2]}</td><td class="num suave">${f[3]}</td><td class="dir">${pts(`Editar|Compartilhar>compartilhar|Duplicar|Mover para pasta|${f[1]==='Ativo'?'Pausar':'Ativar'}|Traduzir>traduzir|Arquivar`)}</td></tr>`).join('')}</tbody></table></div></div></div>`};
+
+T['fluxo-editor']=()=>{
+ const nos=[[200,190,'ini','Início'],[440,40,'','Mensagem','Áudio 1 (gravado)<br>Texto: pagamento na entrega','1.284 passaram'],[660,190,'','Aguarda Resposta','20 min · salva em “sintomas”','61% responderam'],[900,30,'','Mensagem','Lembrete: “Ainda está aí?”','501 passaram'],[900,400,'','Mensagem','Texto + Áudio 2','1.012 passaram'],[660,440,'','Mensagem','Vídeo + Áudios 3, 4 e 5','783 passaram'],[420,440,'','Mensagem','Tabela de preços · 1, 2 ou 3','488 passaram'],[180,440,'','Kanban','Move para “Qualificação”','126 passaram']];
+ const f=(a,b,la,lb)=>{const A=nos[a],B=nos[b],pa={d:[A[0]+200,A[1]+40],e:[A[0],A[1]+40],b:[A[0]+100,A[1]+(a?100:112)],t:[A[0]+100,A[1]]}[la],pb={d:[B[0]+200,B[1]+40],e:[B[0],B[1]+40],b:[B[0]+100,B[1]+100],t:[B[0]+100,B[1]]}[lb];const v=la==='b'||lb==='t';const m=v?(pa[1]+pb[1])/2:(pa[0]+pb[0])/2;return `<path d="M${pa[0]} ${pa[1]} C${v?pa[0]:m} ${v?m:pa[1]},${v?pb[0]:m} ${v?m:pb[1]},${pb[0]} ${pb[1]}" fill="none" stroke="var(--acaolinha)" stroke-width="1.8"/><circle cx="${pa[0]}" cy="${pa[1]}" r="5" fill="var(--painel3)" stroke="var(--suave)" stroke-width="1.5"/>`};
+ const svg=f(0,1,'d','e')+f(1,2,'d','e')+f(2,3,'d','e')+f(2,4,'b','t')+f(3,4,'b','t')+f(4,5,'e','d')+f(5,6,'e','d')+f(6,7,'e','d');
+ return `<div class="topoed"><div style="display:flex;gap:10px;align-items:center">${mc}<a class="bt ic" style="border:0;background:none" href="#fluxos" aria-label="Voltar para Fluxos">${I('volta')}</a><h1 style="font-size:16px">Funil Dolomax</h1><button class="bt ic" style="border:0;background:none" data-m="generica:Editar título||Nome,Funil Dolomax|Salvar|Título atualizado." aria-label="Editar título">${I('lapis')}</button></div><div class="acoes"><button class="bt" data-m="assistente">Assistente IA</button><button class="bt" data-m="nexusPay">Nexus Pay</button><button class="bt" data-t="Fluxo pausado. Ninguém novo entra.">Pausar</button><button class="bt" data-m="traduzir">Traduzir</button><button class="bt" data-t="Fluxo arquivado.">Arquivar</button></div></div>
+ <div class="acoes"><button class="bt pri" data-s="ferr=${S.ferr?'':'1'}">${I('dash')}Ferramentas</button><button class="bt" data-m="simular">${I('play')}Simular</button></div>
+ <div class="cv">${S.ferr?`<div class="ferr">${blocos.map(b=>`<button data-t="Bloco “${b[0]}” adicionado ao canvas."><i style="background:${b[1]}"></i>${b[0]}</button>`).join('')}</div>`:''}
+ <div class="canvas"><div class="inner"><svg class="fios" viewBox="0 0 1112 600">${svg}</svg>${nos.map(n=>n[2]==='ini'?`<div class="no ini" style="left:${n[0]}px;top:${n[1]}px"><header>${I('play')}Início</header><div class="st"><span><small>ENTRADAS</small><b class="num">1.284</b></span><span><small>AVANÇOS</small><b class="num">1.284</b></span><span><small>TAXA</small><b class="num">100%</b></span></div></div>`:`<div class="no" style="left:${n[0]}px;top:${n[1]}px"><header><i style="background:${(blocos.find(b=>b[0]===n[3])||[0,'#3B82F6'])[1]}"></i>${n[3]}</header><div>${n[4]}</div><p class="cnt num">${n[5]}</p></div>`).join('')}</div></div>
+ <div class="zoom grp">${[['−','Diminuir zoom'],['+','Aumentar zoom'],['⤢','Ajustar visão'],['↺','Redefinir visão']].map(z=>`<button data-t="${z[1]}." aria-label="${z[1]}">${z[0]}</button>`).join('')}</div></div>`};
+
+T.agentes=()=>hd('agentes','Agentes de IA','Atendente no WhatsApp que tira dúvida e dispara o fluxo',`<button class="bt" data-m="importarAg">${I('baixa')}Importar</button><button class="bt" data-m="modelosAg">Modelos</button><button class="bt" data-m="criarIA">${I('agentes')}Criar com IA</button><a class="bt pri" href="#agente-editor">${I('mais')}Novo agente</a>`)+
+ chips('agLista',['Agentes','Vozes'])+(S.agLista==='Agentes'?`<div class="grade g3">${[['Nex','Vendedor · tira dúvidas e leva ao pacote','Ativo',412,'nex'],['Orbi','Entregas · confirma e acompanha o pedido','Ativo',97,'orbi'],['Tico','Recompra · lembra no fim do tratamento','Pausado',0,'tico']].map((a,k)=>`<div class="card pad form"><div style="display:flex;gap:10px;align-items:center"><img class="mas" style="width:46px;height:46px" src="mascotes/${a[4]}.jpg" alt=""><div><b>${a[0]}</b><small class="suave" style="display:block;font-size:12px">${a[1]}</small></div></div><div style="display:flex;justify-content:space-between;align-items:center"><span class="pill ${a[2]==='Ativo'?'ok':'alerta'}">${a[2]}</span><span class="suave num" style="font-size:12px">${a[3]} conversas</span></div><div class="acoes"><a class="bt" href="#agente-editor">Editar</a>${pts(`Duplicar|Compartilhar|${a[2]==='Ativo'?'Pausar':'Ativar'}|Excluir`)}</div></div>`).join('')}</div>`
+ :`<div class="card lista">${[['Aline','Feminina · animada'],['Rafael','Masculina · calma']].map((v,k)=>`<div class="item"><span class="av" style="background:${cores[k+4]}">${v[0][0]}</span><div><b>${v[0]}</b><small>${v[1]}</small></div><div class="fim"><button class="bt" data-t="No sistema real, a amostra de voz toca aqui.">${I('play')}Ouvir</button><button class="bt" data-t="Voz definida para os áudios do agente.">Usar</button></div></div>`).join('')}<div class="item"><button class="bt" data-m="generica:Nova voz|Use uma voz da biblioteca ou clone a sua.|Nome,Ex.: Minha voz;Origem,,Biblioteca|Salvar|Voz adicionada.">${I('mais')}Nova voz</button></div></div>`);
+
+T['agente-editor']=()=>{const a=S.agAba;const corpo={
+ 'Foto':`<div><b>Foto</b><p class="suave" style="font-size:13px">Escolhe um avatar ou manda uma foto.</p></div><div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap"><img class="mas" style="width:150px;height:150px" src="mascotes/${mA()[0]}.jpg" alt="Mascote ${mA()[1]}"><div class="form"><span class="dica">JPEG, PNG ou WebP. Até 5 MB.</span><button class="bt" data-t="No sistema real, abre a escolha do arquivo.">${I('camera')}Enviar foto</button></div></div><div><b>${mA()[1]}</b> <span class="suave">· ${mA()[2]}</span></div><div class="avs">${masc.map((m,k)=>`<button class="${k===S.avs?'on':''}" data-s="avs=${k}" aria-label="${m[1]}"><img src="mascotes/${m[0]}.jpg" alt=""><span>${m[1]}</span></button>`).join('')}</div>`,
+ 'Instruções':`<b>Identidade</b>${campo('Função (aparece só pra você)','Ex.: vendedor do Dolomax','text','0/120')}<b>O que ele faz</b><span class="dica">Objetivo principal</span><div class="chips">${['Vender','Agendar','Tirar dúvida','Qualificar'].map((x,k)=>`<button class="${k===0?'on':''}" data-t="Objetivo: ${x}.">${x}</button>`).join('')}</div>${campo('Quem é o cliente','Ex.: pessoas de 45+ com dor nas articulações','area')}<div class="grade g11">${[['Vendedor','Pergunta curto, cria urgência leve, leva sempre pra próxima pergunta'],['Suporte','Resolve rápido, toma o problema, evita enrolação'],['Consultivo','Pergunta antes de oferecer, explica com calma'],['Descontraído','Informal, gírias leves, frases curtas']].map((x,k)=>`<button class="op ${k===2?'on':''}" data-t="Estilo: ${x[0]}."><b>${x[0]}</b><small>${x[1]}</small></button>`).join('')}</div>${campo('Escreve 3 mensagens do jeito que você falaria','Ele copia o jeito. É o que mais muda a conversa.','area')}${campo('Regras do seu negócio','Ex.: pagamento só na entrega; prazo de 5 a 10 dias úteis','area')}${campo('Nunca falar sobre','Ex.: cura, diagnóstico, substituir remédio','area')}${campo('Usar emojis','',['Com moderação, no máximo um por mensagem','Nunca','À vontade'])}<b>Prompt</b><div class="aviso">Salve para gerar</div>`,
+ 'Habilidades':`<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b>Habilidades</b><p class="suave" style="font-size:13px">Além de conversar: descreve a situação e escolhe o que ele faz.</p></div><span class="pill ok">1 ativa</span></div><div class="lista cx" style="padding:0"><div class="item"><div><b>Cliente escolheu um pacote</b><small>Dispara o fluxo “Confirmação de entrega”</small></div><div class="fim">${pts('Editar|Desativar|Excluir')}</div></div></div><button class="bt" data-m="habilidade" style="align-self:flex-start">${I('mais')}Nova habilidade</button><div class="aviso"><b>E dentro do fluxo?</b> Ele fica ativo até alguém desligar no chat, no bloco do fluxo ou nas configurações do agente.</div><div style="display:flex;justify-content:space-between"><div><b>Follow-up</b><p class="suave" style="font-size:13px">O agente chama sozinho se o lead ficar em silêncio. Até 5. Não depende de habilidade.</p></div><span class="pill">1/5</span></div><div class="lista cx" style="padding:0"><div class="item"><div><b>Depois de 1 dia</b><small>Retoma perguntando se ficou dúvida sobre os pacotes</small></div></div></div><button class="bt" data-m="followup" style="align-self:flex-start">${I('mais')}Novo follow-up</button>`,
+ 'Conhecimento':`<div><b>Conhecimento</b><p class="suave" style="font-size:13px">Arquivos e textos que o agente consulta para responder.</p></div><div class="lista cx" style="padding:0"><div class="item">${I('doc')}<div><b>Perguntas frequentes.pdf</b><small>12 páginas · prazo, pagamento, como tomar</small></div><div class="fim"><button class="bt per" data-t="Arquivo removido.">Remover</button></div></div></div><div class="acoes"><button class="bt" data-t="No sistema real, abre a escolha do arquivo.">${I('sobe')}Enviar arquivo</button><button class="bt" data-m="generica:Novo texto|Cole um texto que o agente deve conhecer.|Título,Ex.: Política de troca;Conteúdo,,area|Salvar|Texto adicionado ao conhecimento.">${I('mais')}Adicionar texto</button></div>`,
+ 'Coleta de dados':`<div><b>O que o agente pode anotar</b><p class="suave" style="font-size:13px">Descrição + nome do campo. Tarefa secundária: ele grava se o dado aparecer, sem virar formulário.</p></div>${[['Nome','nome'],['Cidade','cidade'],['Produto de interesse','produto'],['E-mail','email'],['Data de recompra','recompra']].map(x=>`<div class="grade" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;align-items:center"><input class="c" value="${x[0]}" aria-label="Descrição"><input class="c" value="${x[1]}" aria-label="Campo"><span class="dica">Guarda em <b class="roxo">{${x[1]}}</b></span></div>`).join('')}<button class="bt" data-t="Campo adicionado." style="align-self:flex-start">${I('mais')}Novo campo</button><span class="dica">Ele também lê o que já tem no contato: etiqueta, campo e compra. Cliente antigo não responde de novo o que você já sabe.</span><div><b>Arquivos que ele pode enviar</b><p class="suave" style="font-size:13px">Nome do que o arquivo é. Ele manda quando o cliente pedir isso.</p></div><div class="acoes"><input class="c" placeholder="Nome do arquivo" aria-label="Nome do arquivo"><button class="bt" data-t="No sistema real, abre a escolha do arquivo.">${I('sobe')}Enviar arquivo</button></div>`,
+ 'Configurações':`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" checked> <span><b>Assinar o nome do agente</b><small class="suave" style="display:block">Nome no fim da primeira mensagem do atendimento.</small></span></label><div><b>Motor</b><p class="suave" style="font-size:13px">Quanto de cabeça esse agente precisa. Dá pra trocar depois sem refazer nada.</p></div><div class="grade g3">${[['Econômico','Respostas diretas, perguntas simples'],['Equilibrado','Entende contexto e dispara fluxo na hora certa'],['Avançado','Negociação, objeção difícil, ticket alto']].map((x,k)=>`<button class="op ${k===1?'on':''}" data-t="Motor: ${x[0]}."><b>${x[0]}</b><small>${x[1]}</small></button>`).join('')}</div><div><b>Se acabar o crédito com o agente ativo</b><p class="suave" style="font-size:13px">Ele para de responder. Você escolhe o que a plataforma faz no lugar.</p></div>${[['Não fazer nada','A mensagem chega e o agente fica calado. Sem fluxo, sem aviso.'],['Disparar um fluxo','Entrega a conversa de volta pro fluxo escolhido.'],['Enviar uma notificação','Avisa alguém no WhatsApp, igual o bloco de notificação.']].map((x,k)=>`<button class="op ${k===1?'on':''}" data-t="Opção salva."><b>${x[0]}</b><small>${x[1]}</small></button>`).join('')}`,
+ 'Ferramentas externas':`<div style="display:flex;justify-content:space-between"><div><b>MCP</b><p class="suave" style="font-size:13px">Cadastre o MCP uma vez. Nas habilidades, só escolha qual usar.</p></div><span class="pill">0 MCPs</span></div><button class="bt" data-m="generica:Novo MCP||Nome,Ex.: Rastreio;URL do servidor,https://;Token,,password|Salvar|MCP cadastrado." style="align-self:flex-start">${I('mais')}Novo MCP</button>`}[a];
+ return `<div class="migalha">${mc}<a href="#agentes" style="display:flex;gap:6px;align-items:center">${I('volta')}Voltar</a><span style="color:var(--linha)">|</span><a href="#agentes" style="color:var(--texto)">Agentes de IA</a>${I('dirt')}<b style="color:var(--texto)">${mA()[1]}</b></div>
+ <div class="hd" style="align-items:center"><div class="tt" style="align-items:center"><img class="mas" style="width:36px;height:36px" src="mascotes/${mA()[0]}.jpg" alt=""><h1 style="font-size:22px">${mA()[1]}</h1><button class="bt ic" style="border:0;background:none" data-m="generica:Renomear agente||Nome,${mA()[1]}|Salvar|Nome atualizado." aria-label="Editar nome">${I('lapis')}</button><span class="pill alerta">Não salvo</span></div><button class="bt pri" data-t="Agente salvo.">Salvar</button></div>
+ <div class="abas">${['Foto','Instruções','Habilidades','Conhecimento','Coleta de dados','Configurações','Ferramentas externas'].map(x=>`<button class="${x===a?'on':''}" data-s="agAba=${x}">${x}</button>`).join('')}</div>
+ <div class="ag"><div class="card pad form">${corpo}</div>
+ <div class="card teste"><div class="pad" style="border-bottom:1px solid var(--linha)"><div style="display:flex;align-items:center;gap:8px"><img class="mas" style="width:34px;height:34px" src="mascotes/${mA()[0]}.jpg" alt=""><b>${mA()[1]}</b><button class="lk" style="margin-left:auto;color:var(--texto);display:flex;gap:5px;align-items:center;font-size:12px" data-a="limpar">${I('hist')}Limpar conversa</button><span class="ok" style="font-size:11.500px">Teste ao vivo</span></div><p class="dica" style="margin-top:8px">Apaga as mensagens deste teste. O agente começa de novo. O cadastro não muda.</p></div><div class="msgs" id="tmsgs"><div class="m eu">Oi! Sou ${mA()[1]}. Como posso te ajudar?</div></div><form class="compor" id="fTeste" style="border-radius:0 0 8px 8px"><input class="c" id="tmsg" placeholder="Escreva como se fosse o cliente" aria-label="Mensagem de teste"><button class="bt pri ic" style="border-radius:50%" aria-label="Enviar">${I('enviar')}</button></form></div></div>`};
+
+T.conexoes=()=>hd('conexoes','Conexões','',`<button class="bt pri" data-m="novaConexao">${I('mais')}Nova Conexão</button>`)+
+ `<div class="grade g3"><div class="st3"><div><span>Conectadas</span><b class="num">1</b></div><i class="chip" style="background:var(--okfundo);color:var(--ok)">●</i></div><div class="st3"><div><span>Desconectadas</span><b class="num">1</b></div><i class="chip" style="background:var(--perigofundo);color:var(--perigo)">●</i></div><div class="st3"><div><span>Slots Disponíveis</span><b class="num">0 / 2</b><small>2 criadas</small></div><i class="chip g">${I('camadas')}</i></div></div>
+ <div class="linha">${bus('Busca por nome ou número da instância')}<div class="fim">${sel(['Todos os status','Conectadas','Desconectadas'])}</div></div>
+ <div class="card lista"><div class="item"><i class="chip" style="color:var(--ok);background:var(--okfundo)">${I('conexoes')}</i><div><b>Vendas 01</b><small class="num">(62) 9••••-1180 · API Web · fluxo padrão: Funil Dolomax</small></div><div class="fim"><span class="pill ok">Conectada</span>${pts('Fluxos padrões|Reiniciar|Desconectar|Excluir')}</div></div>
+ <div class="item"><i class="chip" style="color:var(--perigo);background:var(--perigofundo)">${I('conexoes')}</i><div><b>Vendas 02</b><small>Sem número · aguardando conexão</small></div><div class="fim"><span class="pill perigo">Desconectada</span><button class="bt pri" data-m="conectar">Conectar</button>${pts('Renomear|Excluir')}</div></div></div>`;
+
+T.webhooks=()=>hd('webhooks','Webhooks','Gerencie múltiplos webhooks, cada um com sua conexão e mapeamento.',`<button class="bt pri" data-m="novoWebhook">${I('mais')}Novo webhook</button>`)+
+ `<div class="linha"><div style="flex:0 1 314px;display:flex">${bus('Buscar webhook pelo nome…')}</div><div class="fim"><div class="cx" style="padding:6px 10px;font-size:11.500px"><span><b style="font-size:11.500px">Consumo: 412</b> <span class="suave">/ 30.000</span></span><div style="display:flex;gap:8px;align-items:center;margin-top:3px"><span style="display:block;width:80px;height:4px;border-radius:2px;background:var(--painel3)"><i style="display:block;width:6%;height:100%;border-radius:2px;background:var(--acao)"></i></span><span class="suave num">1,4%</span></div></div></div></div>
+ <div class="card lista">${[['Transportadora','Vendas 01 → Confirmação de entrega · 97 chamadas'],['Página de vendas','Vendas 01 → Funil Dolomax · 315 chamadas']].map(w=>`<div class="item"><i class="chip" style="color:var(--azul);background:#60A5FA22">${I('webhooks')}</i><div><b>${w[0]}</b><small>${w[1]}</small></div><div class="fim"><span class="pill ok">Ativo</span><button class="bt" data-copia="https://api.nexuscrmpro.com.br/w/exemplo">${I('copia')}Copiar URL</button>${pts('Editar mapeamento|Ver chamadas|Pausar|Excluir')}</div></div>`).join('')}</div>`;
+
+T.disparos=()=>hd('disparos','Disparos em massa','Envie um fluxo para muitos contatos de uma vez, com cota por ciclo da assinatura.',`<button class="bt pri" data-m="novoDisparo">${I('mais')}Novo disparo em massa</button>`)+
+ `<div class="grade g4">${[['466','Restantes'],['34 <span class="suave" style="font-size:12px;font-weight:500">/ 500</span>','Usados no ciclo'],['1','Em andamento'],['2','Concluídos']].map(k=>`<div class="st4"><b class="num">${k[0]}</b><span>${k[1]}</span></div>`).join('')}</div>
+ <div class="card pad form"><div><b>Comprar disparos extras</b><p class="dica">Pacote fechado. Entra no saldo extra e não mexe na cota do mês.</p></div><div class="grade g11">${[['1.000 disparos extras'],['10.000 disparos extras']].map(p=>`<div class="cx form"><div><b style="font-size:13px">${p[0]}</b><div class="suave" style="font-size:12px">valor a definir</div></div><div class="grade g11" style="gap:8px"><button class="bt pri" style="justify-content:center" data-m="extras">Pix ou cartão</button><button class="bt" style="justify-content:center" data-m="extras">Internacional</button></div></div>`).join('')}</div><span class="dica">O que sobrar continua no próximo mês. O que já foi gasto não volta.</span></div>
+ <div class="card tabela"><table><thead><tr><th>Disparo</th><th>Fluxo</th><th>Público</th><th>Progresso</th><th>Status</th><th></th></tr></thead><tbody>${[['Recompra novembro','Recompra 75 dias','34 contatos','21 / 34','Em andamento','roxo'],['Reativação tabela','Recuperação da tabela','58 contatos','58 / 58','Concluído','ok'],['Aviso de frete','Confirmação de entrega','23 contatos','23 / 23','Concluído','ok']].map(d=>`<tr><td><b style="font-weight:600">${d[0]}</b></td><td>${d[1]}</td><td class="suave">${d[2]}</td><td class="num">${d[3]}</td><td><span class="pill ${d[5]}">${d[4]}</span></td><td class="dir">${pts('Ver relatório|Pausar|Duplicar|Cancelar')}</td></tr>`).join('')}</tbody></table></div>`;
+
+T.facebook=()=>hd('facebook','Facebook','Meta Ads, pixel e perfis conectados')+`<div class="barra">${seg('fb',['Gerenciador','Pixel','Perfis e contas'])}</div>`+({
+ 'Gerenciador':`<div class="card tabela"><table><thead><tr><th>Campanha / anúncio</th><th>Status</th><th class="dir">Gasto</th><th class="dir">Conversas</th><th class="dir">Vendas</th><th class="dir">Custo por venda</th><th class="dir">ROAS</th></tr></thead><tbody>${[['Vídeo depoimento joelho',3820,611,35,109,'4,7'],['Imagem rotina da manhã',2910,402,22,132,'3,9'],['Vídeo pergunta e resposta',2690,271,14,192,'2,6']].map(c=>`<tr><td><b style="font-weight:600">${c[0]}</b></td><td><span class="pill ok">Ativo</span></td><td class="dir num">${brl(c[1])}</td><td class="dir num">${c[2]}</td><td class="dir num">${c[3]}</td><td class="dir num ${c[4]>150?'alerta':''}">${brl(c[4])}</td><td class="dir num">${c[5]}</td></tr>`).join('')}</tbody></table></div>`,
+ 'Pixel':`<div class="card lista"><div class="item"><div><b>Pixel Dolomax</b><small class="num">ID 19902•••••• · eventos: conversa iniciada, pedido, compra</small></div><div class="fim"><span class="pill ok">Enviando</span><button class="bt" data-t="Evento de teste enviado.">Testar evento</button></div></div><div class="item"><button class="bt" data-m="generica:Novo pixel||Nome,Ex.: Pixel Dolomax;ID do pixel,;Token da API de conversões,,password|Salvar|Pixel cadastrado.">${I('mais')}Novo pixel</button></div></div>`,
+ 'Perfis e contas':`<div class="card pad form" style="min-height:300px"><p class="suave">Faça login na Meta e autorize o acesso para ver os dados aqui.</p><p class="suave">Depois do login, você escolhe quais contas entram no painel. Nada é ativado automaticamente.</p><button class="bt pri" data-t="No sistema real, abre o login da Meta." style="align-self:flex-start">Entrar com a Meta</button></div>`}[S.fb]);
+
+T.cobranca=()=>hd('cobranca','Cobrança e Assinatura','Gerencie sua assinatura, suas instâncias contratadas e suas faturas')+
+ `<div class="card pad form"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="display:flex;gap:10px"><i class="chip g">${I('coroa')}</i><div><b style="font-size:15px">Assinatura Nexus CRM Pro</b> <span class="pill ok">ATIVA</span><p class="suave" style="font-size:13px;margin-top:6px">Sua conta está ativa e operando normalmente. Cobrança mensal recorrente por instância contratada.</p></div></div><div style="text-align:right"><b class="num" style="font-size:22px">R$ 349,00</b><div class="over">por mês</div></div></div>
+ <div class="grade g4"><div class="cx"><small>Instâncias contratadas</small><b>2 instâncias</b></div><div class="cx"><small>Cliente ativo desde</small><b>Set de 2026</b></div><div class="cx"><small>Próximo vencimento</small><b class="num">28/11/2026</b></div><div class="cx"><small>Forma de pagamento</small><b class="num">Cartão •••• 4410</b><div><button class="lk" data-m="trocarCartao">Trocar cartão</button></div></div></div></div>
+ <div class="grade g3"><div class="card pad form"><div style="display:flex;gap:10px;align-items:center"><i class="chip g">${I('dash')}</i><b style="font-size:15px">Instâncias</b></div><div><b class="num" style="font-size:26px">1 / 2</b> <span class="suave">em uso</span></div><span style="display:block;height:5px;border-radius:3px;background:var(--painel3)"><i style="display:block;width:50%;height:100%;border-radius:3px;background:var(--acao)"></i></span><div class="grade g11" style="gap:0"><div class="cx" style="border-radius:7px 0 0 7px"><small>Contratadas</small><b>2</b></div><div class="cx" style="border-radius:0 7px 7px 0;border-left:0"><small>Livres</small><b>1</b></div></div><span class="dica">Cada instância é uma conexão de WhatsApp.</span><button class="bt verde" data-m="instancias">+ Comprar mais instâncias</button><button class="lk" data-m="plano">Alterar plano na renovação</button><button class="lk per" data-m="cancelar">Cancelar assinatura</button></div>
+ <div class="card pad form"><div style="display:flex;gap:10px;align-items:center"><i class="chip g">${I('raio')}</i><b style="font-size:15px">Créditos de IA</b></div><div><b class="num" style="font-size:26px">1.240</b> <span class="suave">disponíveis</span></div><span style="display:block;height:5px;border-radius:3px;background:var(--painel3)"><i style="display:block;width:62%;height:100%;border-radius:3px;background:var(--acao)"></i></span><div class="grade g11" style="gap:0"><div class="cx" style="border-radius:7px 0 0 7px"><small>Usados</small><b>760</b></div><div class="cx" style="border-radius:0 7px 7px 0;border-left:0"><small>Última recarga</small><b class="num">02/11</b></div></div><span class="dica">Compra avulsa, vale para a conta inteira · separado da assinatura.</span><button class="bt verde" data-m="creditos">+ Adicionar créditos</button></div>
+ <div class="card pad form"><div style="display:flex;gap:10px;align-items:center"><i class="chip g">${I('tutoriais')}</i><b style="font-size:15px">Informações da conta</b></div>${[['ID da conta',`<span class="pill num">10482</span> <button class="bt ic" style="border:0;background:none;padding:2px" data-copia="10482" aria-label="Copiar ID">${I('copia')}</button>`],['Titular','Ana Paula Moreira'],['E-mail','ana.paula@exemplo.com'],['Recorrência','Mensal'],['Próximo vencimento','28/11/2026'],['País de cobrança','Brasil']].map(x=>`<div style="display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--linha);padding-bottom:9px;font-size:13px"><span class="suave">${x[0]}</span><b class="num" style="text-align:right;overflow-wrap:anywhere">${x[1]}</b></div>`).join('')}</div></div>
+ <div class="card"><header><div style="display:flex;gap:10px"><i class="chip g">${I('doc')}</i><div><h2>Histórico de faturas</h2><p>Histórico financeiro completo da sua conta</p></div></div><div class="acoes"><button class="bt" data-t="Nenhum reembolso solicitado.">Reembolsos</button><button class="bt" style="border-color:var(--acao);color:var(--acao2)" data-t="Todas as faturas listadas.">Ver todas</button></div></header><div class="tabela"><table><thead><tr><th>Fatura</th><th>Data</th><th>Descrição</th><th>Valor</th><th>Status</th></tr></thead><tbody>${[['#10482-1043','2026-10-28'],['#10482-0981','2026-09-28']].map(f=>`<tr><td class="num">${f[0]}</td><td class="num suave">${f[1]}</td><td><b style="font-weight:600">Assinatura mensal · 2 instâncias</b></td><td class="num"><b>R$ 349,00</b></td><td><span class="pill ok">Paga</span></td></tr>`).join('')}</tbody></table></div><div class="pad"><button class="bt" data-m="suporte">Falar com Suporte</button></div></div>`;
+
+const CFG={'Conta':[['empresa','Empresa','predio'],['equipe','Equipe','contatos'],['convites','Convites para Plataforma','contatos'],['acesso','Acesso de suporte','tutoriais'],['traducoes','Traduções de fluxo','global'],['usoia','Uso da IA','raio']],
+ 'Automação':[['padroes','Fluxos Padrões','raio'],['cdisparos','Disparos em massa','disparos'],['respostas','Respostas Rápidas','chat'],['templates','Templates WhatsApp','doc'],['variaveis','Variáveis Globais','info'],['campos','Campos Personalizados','camadas'],['etiquetas','Etiquetas','salva']],
+ 'Integrações':[['integracoes','Integrações','conexoes'],['track','Trackeamento','busca'],['produtos','Produtos','sacola'],['mcp','Ferramentas MCP','agentes'],['corp','Dados Corporativos','predio'],['deptos','Departamentos','kanban'],['horarios','Horários de Trabalho','relogio']]};
+const lst=(cols,rows,menu='Editar|Excluir')=>`<div class="tabela cx" style="padding:0"><table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th class="dir">Ações</th></tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}<td class="dir">${pts(menu)}</td></tr>`).join('')}</tbody></table></div>`;
+const topo=(cont,bt,m,filtros='')=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="suave" style="font-size:13px">${cont}</span>${bt?`<button class="bt pri" data-m="${m}">${I('mais')}${bt}</button>`:''}</div>${filtros}`;
+const fb1=`<label class="f">Buscar${bus('Buscar…')}</label>`;
+const C={
+ empresa:['Empresa','Dados da empresa selecionada no menu lateral.',()=>`<div style="display:flex;justify-content:space-between;align-items:center"><b>Dados da Empresa</b><span class="pill ok">Ativa</span></div><span class="dica">Informações exibidas para seus clientes e relatórios</span>${campo('Nome da empresa*','Ana Paula Moreira')}${campo('Descrição','Venda de encapsulados com pagamento na entrega','area')}${campo('Slug','ana-paula-moreira')}${campo('Fuso horário','',['Brasília (America/Sao_Paulo)','Manaus (America/Manaus)'],'Define o fuso usado no dashboard, filtros, condicionais de fluxo, intervalo inteligente, horário comercial e variáveis de data/hora.')}<label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" checked><span><b>Notificações por e-mail de instâncias</b><small class="suave" style="display:block">Envia e-mail ao proprietário quando uma instância desconecta ou fica restrita.</small></span></label><button class="bt pri" data-t="Empresa salva." style="align-self:flex-start">Salvar empresa</button>`],
+ equipe:['Equipe','Gerencie os membros, funções e permissões da sua equipe.',()=>topo('2 membros','Convidar membro','convidar')+`<div class="grade" style="grid-template-columns:minmax(0,1fr) 160px 180px">${fb1}${campo('Função','',['Todas as funções','Proprietário','Atendente'])}${campo('Departamento','',['Todos os departamentos','Vendas','Pós-venda'])}</div><div class="tabela cx" style="padding:0"><table><thead><tr><th style="width:30px"><input type="checkbox" aria-label="Selecionar todos"></th><th>Membro ⇅</th><th>Função ⇅</th><th>Depto ⇅</th><th class="dir">Ações</th></tr></thead><tbody>${[['Ana Paula Moreira','ana.paula@exemplo.com','Proprietário','Sem departamento'],['Bruno Lima','bruno@exemplo.com','Atendente','Vendas']].map((u,k)=>`<tr><td><input type="checkbox" aria-label="Selecionar ${u[0]}"></td><td><span style="display:flex;gap:10px;align-items:center"><span class="av" style="background:${cores[k+2]}">${u[0][0]}</span><span><b style="font-weight:600">${u[0]}</b><small class="suave" style="display:block;font-size:12px">${u[1]}</small></span></span></td><td><span class="pill ${k?'':'alerta'}">${u[2]}</span></td><td class="suave"><i>${u[3]}</i></td><td class="dir">${pts('Alterar função|Mudar departamento|Remover')}</td></tr>`).join('')}</tbody></table></div><div class="cx form"><div><b style="font-size:15px">Convites pendentes</b><p class="suave" style="font-size:13px">Reenvie ou cancele convites que ainda não foram aceitos</p></div><div class="cx" style="text-align:center;padding:22px"><span class="suave">${I('carta')}</span><p class="suave" style="font-size:13px">Nenhum convite pendente</p></div></div>`],
+ convites:['Convites para Plataforma','Convide pessoas para a plataforma.',()=>topo('','Convidar para Plataforma','generica:Convidar para Plataforma||E-mail,pessoa@empresa.com,email|Enviar convite|Convite enviado.')+`<div class="grade" style="grid-template-columns:repeat(5,minmax(0,1fr))">${[['3','Total'],['1','Pendentes'],['2','Aceitos'],['0','Recusados'],['0','Expirados']].map(x=>`<div class="cx"><b style="font-size:18px">${x[0]}</b><small style="margin:4px 0 0">${x[1]}</small></div>`).join('')}</div><div class="grade g11">${fb1}${campo('Filtrar por status:','',['Todos','Pendentes','Aceitos'])}</div>`+lst(['E-mail','Status','Enviado'],[['carla@exemplo.com','<span class="pill alerta">Pendente</span>','11/11'],['diego@exemplo.com','<span class="pill ok">Aceito</span>','02/11']],'Reenviar|Cancelar')],
+ acesso:['Acesso de suporte','Veja e revogue acessos temporários aprovados para a equipe de suporte.',()=>`<span class="dica">Equipe de suporte com acesso temporário aprovado nesta conta.</span><div class="lista cx" style="padding:0"><div class="item"><div><b>Suporte da mentoria</b><small>Liberado em 12/11 · expira em 24 h</small></div><div class="fim"><button class="bt per" data-t="Acesso revogado.">Revogar</button></div></div></div>`],
+ traducoes:['Traduções de fluxo','Só o tradutor de fluxo: original, cópia, reservado, usado e devolvido.',()=>vazio('global','Nenhuma tradução nesta conta.','Quando você traduzir um fluxo, o reservado, o usado e o devolvido aparecem aqui.')],
+ usoia:['Uso da IA','Cobranças das conversas da IA, agrupadas por sessão. Não mistura com o tradutor.',()=>lst(['Sessão','Data','Créditos'],[['Agente Nex · 38 conversas','13/11','212'],['Assistente de fluxo','12/11','40']],'Ver detalhes')],
+ padroes:['Fluxos Padrões','Defina os fluxos padrões de cada conexão do WhatsApp.',()=>`<b>Vendas 01</b><div class="grade g3">${campo('Contato novo','',nomesF)}${campo('Fora do horário','',['Nenhum',...nomesF])}${campo('Palavra-chave','',['Nenhum',...nomesF])}</div><button class="bt pri" data-t="Fluxos padrões salvos." style="align-self:flex-start">Salvar</button>`],
+ cdisparos:['Disparos em massa','Ritmo padrão e limites dos disparos.',()=>campo('Ritmo padrão','',['Seguro · 1 a cada 40–90 s','Moderado · 1 a cada 20–40 s'])+campo('Limite por dia e por número','100','number')+`<button class="bt pri" data-t="Configuração salva." style="align-self:flex-start">Salvar</button>`],
+ respostas:['Respostas Rápidas','Gerencie e organize as respostas rápidas da sua empresa.',()=>topo('3 respostas','Nova Resposta','generica:Nova Resposta|Use no chat digitando / e o atalho.|Atalho,Ex.: prazo;Tipo,,Texto;Mensagem,,area|Salvar|Resposta rápida criada.')+`<div class="grade g11">${fb1}${campo('Tipo','',['Todos os tipos','Texto','Áudio','Imagem'])}</div>`+lst(['Atalho','Tipo','Mensagem'],[['/prazo','Texto','A entrega leva de 5 a 10 dias úteis…'],['/pagamento','Texto','Você só paga quando receber em casa…'],['/comotomar','Áudio','como-tomar.ogg']])],
+ templates:['Templates WhatsApp','Gerencie templates oficiais Meta por WABA.',()=>`<div class="acoes" style="justify-content:flex-end"><button class="bt" data-t="Templates sincronizados.">${I('gira')}Sincronizar</button><button class="bt pri" data-m="generica:Novo template|Enviado para aprovação da Meta.|Nome,confirmacao_entrega;Categoria,,Utilidade;Texto,,area|Enviar para aprovação|Template enviado para aprovação.">${I('mais')}Criar</button></div><div class="grade g11">${campo('WABA','',['Nenhuma conexão Meta Cloud'])}${campo('Status','',['Todos','Aprovados','Pendentes'])}</div>`+vazio('doc','Nenhuma conexão Meta Cloud','Conecte um número pela API Oficial para usar templates.')],
+ variaveis:['Variáveis Globais','Gerencie as variáveis que podem ser usadas em todos os seus fluxos.',()=>topo('5 variáveis','Nova Variável','generica:Nova Variável||Nome,Ex.: preco_3_meses;Valor,Ex.: R$ 397|Salvar|Variável criada.')+fb1+lst(['Variável','Valor'],[['{{produto}}','Dolomax'],['{{preco_3_meses}}','R$ 397'],['{{preco_5_meses}}','R$ 497'],['{{preco_1_ano}}','R$ 797'],['{{vendedor}}','(62) 9••••-1180']])],
+ campos:['Campos Personalizados','Gerencie campos customizados e variáveis do sistema BOT para seus contatos.',()=>`<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">${seg('campos',['Customizados','Sistema (BOT)'])}<button class="bt pri" data-m="generica:Novo Campo||Nome,Ex.: cep;Descrição,;Tipo,,Texto|Salvar|Campo criado.">${I('mais')}Novo Campo</button></div><div><b>Campos ${S.campos==='Customizados'?'customizados ativos':'do sistema'}</b><p class="suave" style="font-size:13px">Defina campos adicionais para registrar detalhes customizados em seus leads</p></div>`+(S.campos==='Customizados'?lst(['Nome','Descrição','Tipo'],[['sintomas','Resposta à primeira pergunta','Texto'],['pedido','Pacote escolhido (1, 2 ou 3)','Texto'],['cep','CEP de entrega','Texto']]):lst(['Nome','Descrição','Tipo'],[['nome','Nome do contato','Sistema'],['telefone','Número do WhatsApp','Sistema'],['ctwa_clid','Anúncio: clique para WhatsApp','Sistema']],'Ver uso'))],
+ etiquetas:['Etiquetas','Organize e classifique itens usando etiquetas.',()=>topo('4 etiquetas','Nova Etiqueta','generica:Nova Etiqueta||Nome,Ex.: quente;Cor,,Roxo|Salvar|Etiqueta criada.')+fb1+lst(['Etiqueta','Contatos'],[['<span class="pill roxo">quente</span>','18'],['<span class="pill ok">cliente</span>','71'],['<span class="pill alerta">dúvida</span>','9'],['<span class="pill">pedido</span>','26']])],
+ integracoes:['Integrações','Conecte emissores de NF, rastreamento de vendas e outros serviços à sua conta.',()=>`<div class="chips">${['Todas','WhatsApp','Notas Fiscais','Trackeamento','Pagamentos','Inteligência Artificial'].map((x,k)=>`<button class="${k===0?'on':''}" data-t="Filtro: ${x}.">${x}</button>`).join('')}</div><span class="over">Destaques</span><div class="cx" style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><span class="pill roxo">NOVIDADE</span> <span class="over">Pagamentos</span><b style="display:block;margin-top:4px">Nexus Pay</b><small class="suave">Pix e cartão dentro do fluxo.</small></div><button class="bt pri" data-m="generica:Configurar Nexus Pay||Chave de acesso,,password|Conectar|Integração conectada.">Configurar</button></div><span class="over">Ativas 0 · Conectadas na sua conta</span><span class="dica">Nenhuma integração ativa em Todas. Escolha uma opção abaixo para começar.</span><span class="over">Disponíveis 9 · Prontas para conectar</span><div class="grade g3">${[['Notas Fiscais','Emissor de NF-e','Emissão automatizada de notas das vendas'],['Trackeamento','Rastreio de vendas','Envio automático de conversões para a Meta'],['Trackeamento','UTM e campanhas','Atribuição de vendas avançada'],['Inteligência Artificial','Modelo de IA (chave própria)','IA generativa para fluxos e agentes'],['Inteligência Artificial','Modelos multimodais','Texto, imagem e áudio'],['Inteligência Artificial','Voz por IA','Síntese de voz para áudio nos fluxos'],['Inteligência Artificial','Roteador de modelos','Uma chave para vários modelos'],['Pagamentos','Gateway Pix','Recebimento em tempo real'],['Pagamentos','Pagamentos internacionais','Métodos locais e multi-moeda']].map(x=>`<div class="cx form"><div><small>${x[0]}</small><b>${x[1]}</b><div class="suave" style="font-size:12px">${x[2]}</div></div><button class="bt" style="align-self:flex-start" data-m="generica:Configurar ${x[1]}||Chave de acesso,,password|Conectar|Integração conectada.">Configurar</button></div>`).join('')}</div>`],
+ track:['Trackeamento','Liga o anúncio ao WhatsApp e devolve a conversão para a plataforma de anúncio.',()=>`<div style="display:flex;justify-content:space-between;align-items:center"><b>Pixels</b><button class="bt pri" data-m="generica:Novo pixel||Plataforma,,Meta;ID do pixel,|Salvar|Pixel cadastrado.">${I('mais')}Novo pixel</button></div>${vazio('busca','Nenhum pixel ainda','Cadastre o pixel da conta de anúncio para devolver a conversão.')}<div style="display:flex;justify-content:space-between;align-items:center"><b>Links</b><button class="bt pri" data-m="generica:Novo link||Nome,Ex.: Anúncio joelho;Instância,,Vendas 01;Mensagem inicial,Oi! Vi o anúncio|Criar|Link criado.">${I('mais')}Novo link</button></div>${vazio('conexoes','Nenhum link ainda','Crie o link que o anúncio vai usar e escolha a instância do WhatsApp.')}`],
+ produtos:['Produtos','Usados em vendas e fluxos.',()=>topo('3 produtos','Novo produto','generica:Novo produto||Nome,Ex.: Dolomax · 3 meses;Preço,R$ 0;Frascos,4,number|Cadastrar|Produto cadastrado.')+fb1+lst(['Produto','Frascos','Preço'],[['Dolomax · 3 meses','4','R$ 397'],['Dolomax · 5 meses','6','R$ 497'],['Dolomax · 1 ano','13','R$ 797']])],
+ mcp:['Ferramentas MCP','Conecte e gerencie seu servidor MCP.',()=>`<div class="acoes" style="justify-content:flex-end"><button class="bt" data-t="No sistema real, abre o guia de uso.">Como usar?</button><button class="bt pri" data-m="generica:Nova credencial||Nome,Ex.: Meu assistente|Gerar|Credencial gerada. Copie e guarde.">${I('mais')}Nova credencial</button></div><div class="cx form"><b>Servidor MCP</b><span class="dica">Use a URL e uma credencial abaixo para conectar seu agente externo de IA.</span><div class="aviso num">https://mcp.nexuscrmpro.com.br/exemplo</div><span class="pill" style="align-self:flex-start">Sem credenciais</span></div>`],
+ corp:['Dados Corporativos','Dados fiscais usados em notas e faturas.',()=>campo('Razão social','')+campo('CNPJ / CPF','')+`<div class="grade g3">${campo('CEP','')}${campo('Cidade','')}${campo('Estado','')}</div><button class="bt pri" data-t="Dados salvos." style="align-self:flex-start">Salvar</button>`],
+ deptos:['Departamentos','Separe a equipe e direcione conversas.',()=>topo('2 departamentos','Novo departamento','generica:Novo departamento||Nome,Ex.: Pós-venda|Criar|Departamento criado.')+lst(['Departamento','Membros'],[['Vendas','1'],['Pós-venda','0']])],
+ horarios:['Horários de Trabalho','Define o horário comercial usado nos fluxos e no atendimento.',()=>['Segunda a sexta','Sábado','Domingo'].map((d,k)=>`<div class="grade" style="grid-template-columns:160px 1fr 1fr;align-items:end"><label style="display:flex;gap:8px;align-items:center;padding-bottom:8px"><input type="checkbox" ${k<2?'checked':''}> ${d}</label>${campo('Das','','time')}${campo('Até','','time')}</div>`).join('')+`<button class="bt pri" data-t="Horários salvos." style="align-self:flex-start">Salvar</button>`]
+};
+T.config=()=>{const c=C[S.cfg];return `<div><div style="display:flex;gap:10px;align-items:center">${mc}<span class="over">Configurações</span></div><h1 style="margin-top:4px">${c[0]}</h1><p class="suave" style="font-size:13px;margin-top:3px">${c[1]}</p></div>
+ <div class="cfg"><div class="cfgm">${Object.keys(CFG).map(g=>`<span class="over" style="padding:${g==='Conta'?'0':'12px'} 10px 5px">${g}</span>${CFG[g].map(x=>`<button class="${S.cfg===x[0]?'on':''}" data-s="cfg=${x[0]}">${I(x[2])}${x[1]}</button>`).join('')}`).join('')}<button data-m="empresa" style="margin-top:8px">${I('mais')}Nova Conta</button></div><div class="card pad form">${c[2]()}</div></div>`};
+
+T.tutoriais=()=>hd('tutoriais','Tutoriais','Aprenda a usar cada parte do sistema')+`<div class="grade g3">${[['Primeiros passos','Conectar o WhatsApp e instalar o funil','6 min'],['Editor de fluxos','Blocos, esperas e condições','11 min'],['Agente de IA','Instruções, habilidades e teste','9 min'],['Kanban e vendas','Do lead ao pedido entregue','7 min'],['Disparos com segurança','Ritmo e público certos','5 min'],['Anúncios e pixel','Medir o que vende','8 min']].map(t=>`<button class="card pad form" style="text-align:left" data-t="No sistema real, o vídeo abre aqui."><i class="chip g">${I('play')}</i><b>${t[0]}</b><small class="suave">${t[1]} · ${t[2]}</small></button>`).join('')}</div>`;
+
+/* ---------- conta mestre ---------- */
+T.mestre=()=>{const cv=mentorados.reduce((a,m)=>a+m[3],0),pd=mentorados.reduce((a,m)=>a+m[4],0);
+ return hd('mestre','Operação','Todos os mentorados · últimos 7 dias',sel(['Últimos 7 dias','Hoje','Últimos 30 dias']))+tiles([['Contas ativas','7','','#60A5FA','contatos',0],['Conversas recebidas',cv.toLocaleString('pt-BR'),'var(--ciano)','#2DD4BF','chat',11],['Pedidos da turma',String(pd),'','#38BDF8','sacola',8],['Receita mensal','R$ 2.093,00','var(--ok)','#34D399','gema',14]])+
+ `<div class="grade g2"><div class="card"><header><div><h2>Mentorados</h2><p>Ordenado por conversas</p></div></header><div class="tabela"><table><thead><tr><th>Mentorado</th><th>WhatsApp</th><th class="dir">Conversas</th><th class="dir">Pedidos</th><th class="dir">Entregues</th><th>Funil</th></tr></thead><tbody>${mentorados.map(m=>`<tr><td><b style="font-weight:600">${m[0]}</b><small class="suave" style="display:block;font-size:12px">${m[1]}</small></td><td><span class="pill ${m[2]}">${m[2]==='ok'?'Conectado':'Caiu'}</span></td><td class="dir num">${m[3]}</td><td class="dir num">${m[4]}</td><td class="dir num">${m[5]}</td><td><span class="pill ${m[6]==='v3'?'ok':m[6]==='v2'?'alerta':''}">${m[6]}</span></td></tr>`).join('')}</tbody></table></div></div>
+ <div class="card"><header><div><h2>Precisa de atenção</h2><p>4 contas</p></div></header><div class="lista">${[['Tatiane Souza','WhatsApp desconectado há 9 dias e assinatura vencida','perigo'],['Fernanda Luz','WhatsApp caiu há 2 dias','perigo'],['Juliana Reis','Sem acessar há 6 dias · fatura em aberto','alerta'],['Marcos Vieira','Ainda no Dolomax v2','alerta']].map(a=>`<div class="item"><span class="pill ${a[2]}">!</span><div><b>${a[0]}</b><small>${a[1]}</small></div></div>`).join('')}</div></div></div>
+ <div class="card"><header><div><h2>Conversas da turma por dia</h2><p>1.588 na semana</p></div></header>${area([198,214,221,236,229,252,238],dias,300)}</div>`};
+T.mentorados=()=>hd('contatos','Mentorados','7 contas · cada uma com login e assinatura próprios',`<button class="bt pri" data-m="generica:Nova conta|O mentorado recebe o acesso por e-mail.|Nome,;E-mail,,email;Plano,,Essencial|Criar conta|Conta criada e convite enviado.">${I('mais')}Nova conta</button>`)+`<div class="card tabela"><table><thead><tr><th>Mentorado</th><th>Plano</th><th>Assinatura</th><th>Vence</th><th>WhatsApp</th><th class="dir">Conversas 7d</th><th class="dir">Ações</th></tr></thead><tbody>${mentorados.map(m=>`<tr><td><b style="font-weight:600">${m[0]}</b></td><td>${m[9]}</td><td><span class="pill ${m[7]}">${m[7]==='ok'?'Em dia':m[7]==='alerta'?'Em aberto':'Suspensa'}</span></td><td class="num suave">${m[8]}</td><td><span class="pill ${m[2]}">${m[2]==='ok'?'Conectado':'Caiu'}</span></td><td class="dir num">${m[3]}</td><td class="dir">${pts('Ver números da conta|Pedir acesso de suporte|Mudar plano|Suspender')}</td></tr>`).join('')}</tbody></table></div><p class="suave" style="font-size:12.500px">Números e fluxos aparecem sempre. O texto das conversas só abre com o acesso de suporte liberado pelo mentorado, e cada acesso fica registrado.</p>`;
+T.global=()=>hd('global','Atualização global','Publique uma versão nova e todos os mentorados recebem sozinhos')+`<div class="grade g2"><div class="card"><header><div><h2>Dolomax</h2><p>Modelo da mentoria</p></div></header><div class="lista"><div class="item"><span class="pill roxo">v4</span><div><b>Rascunho pronto para publicar</b><small>+ lembrete 1 dia depois da tabela · + pergunta do CEP · preços e áudios de cada mentorado mantidos</small></div></div><div class="item"><span class="pill ok">v3</span><div><b>Publicada em 12/11</b><small>Tabela de preços escrita · 5 de 6 contas atualizadas</small></div></div><div class="item"><span class="pill">v2</span><div><b>Publicada em 02/11</b><small>Lembretes nas esperas</small></div><div class="fim"><button class="bt" data-t="Todas as contas voltaram para a v2.">Voltar para esta</button></div></div></div></div>
+ <div class="card pad form"><b style="font-size:15px">Publicar v4</b>${campo('Quando aplicar','',['Agora, em todas as contas','Hoje às 23h','Só em contas escolhidas'])}<div class="aviso">Conversas em andamento terminam na versão em que começaram. Contatos novos entram na v4. 1 conta desligada do modelo não recebe.</div><button class="bt pri" style="justify-content:center" data-t="v4 publicada para 6 contas. Os mentorados foram avisados.">Publicar v4 para 6 contas</button></div></div>`;
+T.assinaturas=()=>hd('cobranca','Assinaturas','Receita recorrente do Nexus CRM Pro')+tiles([['Receita mensal','R$ 2.093,00','var(--ok)','#34D399','gema',14],['Em dia','5','','#60A5FA','check',0],['Em aberto','1','var(--alerta)','#FBBF24','relogio',0],['Suspensas','1','var(--perigo)','#F87171','mega',0]])+`<div class="card tabela"><table><thead><tr><th>Mentorado</th><th>Plano</th><th>Valor</th><th>Vencimento</th><th>Situação</th></tr></thead><tbody>${mentorados.map(m=>`<tr><td>${m[0]}</td><td>${m[9]}</td><td class="num">${m[9]==='Pro'?'R$ 349,00':'R$ 199,00'}</td><td class="num suave">${m[8]}</td><td><span class="pill ${m[7]}">${m[7]==='ok'?'Em dia':m[7]==='alerta'?'Lembrete enviado':'Suspensa após 5 dias'}</span></td></tr>`).join('')}</tbody></table></div><p class="suave" style="font-size:12.500px">Valores dos planos ilustrativos.</p>`;
+
+/* ---------- menu lateral ---------- */
+const MENU=[['|Principal'],['dashboard','Dashboard','dash'],['chats','Chats ao vivo','chat'],['kanban','Kanban','kanban'],['contatos','Contatos','contatos'],
+ ['|Operações'],['fluxos','Fluxos','fluxos'],['agentes','Agentes de IA','agentes'],['conexoes','Conexões','conexoes'],['webhooks','Webhooks de entrada','webhooks'],['disparos','Disparos em massa','disparos'],['facebook','Facebook','facebook'],
+ ['|Gestão'],['cobranca','Cobranças e assinaturas','cobranca'],['config','Configurações','config'],['tutoriais','Tutoriais','tutoriais']];
+const MENUM=[['|Conta mestre'],['mestre','Operação','mestre'],['mentorados','Mentorados','contatos'],['global','Atualização global','global'],['assinaturas','Assinaturas','cobranca']];
+const pai={'fluxo-editor':'fluxos','agente-editor':'agentes','quadro':'kanban'};
+function lado(v){const m=S.papel==='mestre'?MENUM:MENU,me=S.papel==='mestre';
+ return `<nav class="lado" id="lado" aria-label="Menu"><div class="marca">${N()}<div><b>NEXUS</b><small>CRM PRO</small></div><button class="rc" data-a="rec" aria-label="Recolher menu">${I('rec')}</button></div>
+ <button class="empresa" data-m="empresa"><span><b>${me?'Conta mestre':'Ana Paula Moreira'}</b><span>${me?'7 mentorados':'Leads: 1.284'}</span></span>${I('seta')}</button>
+ ${m.map(x=>x[0][0]==='|'?`<div class="grupo">${x[0].slice(1)}</div>`:`<a class="it ${(pai[v]||v)===x[0]?'on':''}" href="#${x[0]}" title="${x[1]}">${I(x[2])}<span class="tx">${x[1]}</span></a>`).join('')}
+ <div class="pe"><button class="saldo" data-m="creditos">1.240 créditos de IA</button><div class="duo"><button class="bt amb" data-m="suporte">${I('tutoriais')}Suporte</button><button class="bt pri" data-m="indicar">${I('contatos')}Afiliação</button></div>
+ <div class="tema"><button data-a="tema" style="display:flex;gap:8px;align-items:center;background:none;border:0;padding:0;text-align:left" aria-label="Trocar tema"><span class="alerta">${I('sol')}</span><span>${S.claro?'Escuro':'Claro'}<small>Ctrl+M</small></span></button><button class="sn" data-m="notifs" aria-label="Notificações">${I('sino')}</button></div>
+ <button class="perfil" data-menu="Ver como mentorado>!mentorado|Ver como mestre>!mestre|Meu perfil|Sair"><span class="av">${me?'DB':'AP'}</span><span class="tx" style="flex:1;min-width:0"><b>${me?'David e sócio':'Ana Paula Moreira'}</b><span>${me?'conta mestre':'ana.paula@exemplo.com'}</span></span>${I('seta')}</button>
+ <p class="exemplo">Protótipo · dados de exemplo</p></div></nav>`}
+
+/* ---------- motor ---------- */
+function render(){let v=(location.hash||'').slice(1);const doM=['mestre','mentorados','global','assinaturas'];
+ if(!T[v]) v=S.papel==='mestre'?'mestre':'dashboard';
+ if(doM.includes(v)&&S.papel!=='mestre'){S.papel='mestre';guarda()} if(!doM.includes(v)&&S.papel==='mestre'){S.papel='mentorado';guarda()}
+ document.body.classList.toggle('claro',S.claro);document.body.classList.toggle('rec',S.rec);
+ const y=window.scrollY; R.innerHTML=`<div class="app">${lado(v)}<main>${T[v]()}</main></div>`; window.scrollTo(0,render.v===v?y:0); render.v=v; arraste();}
+function toast(t){document.querySelectorAll('.toast').forEach(x=>x.remove());const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2800)}
+function abrir(k){let h;if(k.startsWith('generica:')){const p=k.slice(9).split('|');h=M.generica(p[0],p[1],p[2].split(';').map(c=>{const a=c.split(',');const tp=a[2];return [a[0],a[1]||'',['area','email','password','number'].includes(tp)?tp:(tp?[tp,'Outro']:'text')]}),p[3],p[4])}else h=M[k]();SO.innerHTML=h;const f=SO.querySelector('input,select,textarea');if(f)f.focus()}
+function fechar(){SO.innerHTML=''}
+function menu(btn){fechar();const ops=btn.dataset.menu.split('|');const r=btn.getBoundingClientRect();const d=document.createElement('div');d.className='menu';d.setAttribute('role','menu');
+ d.innerHTML=ops.map(o=>{const [t,ac]=o.split('>');return `<button role="menuitem" data-mi="${ac||''}" data-nome="${t}">${t}</button>`}).join('');SO.appendChild(d);
+ const w=d.offsetWidth,hh=d.offsetHeight;d.style.left=Math.max(8,Math.min(r.right-w,innerWidth-w-8))+'px';d.style.top=(r.bottom+hh+8>innerHeight?Math.max(8,r.top-hh-4):r.bottom+4)+'px'}
+function arraste(){let pego=null;R.querySelectorAll('.kc').forEach(c=>{c.draggable=true;c.addEventListener('dragstart',e=>{pego=c;c.classList.add('arr');try{e.dataTransfer.setData('text/plain','c')}catch(x){}});c.addEventListener('dragend',()=>{c.classList.remove('arr');R.querySelectorAll('.col.alvo').forEach(x=>x.classList.remove('alvo'))})});
+ R.querySelectorAll('.col').forEach(col=>{col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('alvo')});col.addEventListener('dragleave',e=>{if(!col.contains(e.relatedTarget))col.classList.remove('alvo')});
+  col.addEventListener('drop',e=>{e.preventDefault();col.classList.remove('alvo');if(!pego)return;const de=pego.closest('.col');if(de===col)return;const n=x=>x.querySelector('h3 .n');n(de).textContent=parseInt(n(de).textContent,10)-1;n(col).textContent=parseInt(n(col).textContent,10)+1;col.querySelector('.cards').prepend(pego);toast(pego.querySelector('.l1 span').textContent+' movido para “'+col.querySelector('h3').firstChild.textContent+'”.');pego=null})})}
+
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-m],[data-s],[data-t],[data-a],[data-ok],[data-menu],[data-mi],[data-conv],[data-passo],[data-copia],[data-kb]');
+ if(!el){if(!e.target.closest('.menu'))document.querySelectorAll('.menu').forEach(x=>x.remove());return}
+ const d=el.dataset;
+ if(d.kb!==undefined){S.kb=+d.kb;return}
+ if(d.mi!==undefined){const ac=d.mi;document.querySelectorAll('.menu').forEach(x=>x.remove());if(ac&&ac[0]==='!'){S.papel=ac.slice(1);guarda();const h=S.papel==='mestre'?'mestre':'dashboard';if(location.hash.slice(1)===h)render();else location.hash=h}else if(ac)abrir(ac);else toast(d.nome+': feito.');return}
+ if(d.menu){e.preventDefault();menu(el);return}
+ if(d.m){e.preventDefault();if(d.m==='novoDisparo')S.passo=0;abrir(d.m);return}
+ if(d.passo!==undefined){S.passo=+d.passo;abrir('novoDisparo');return}
+ if(d.ok){fechar();toast(d.ok);return}
+ if(d.copia){const t=d.copia;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copiado.')).catch(()=>toast('Selecione e copie: '+t));return}
+ if(d.s){const k=d.s.slice(0,d.s.indexOf('=')),val=d.s.slice(d.s.indexOf('=')+1);S[k]=(k==='avs')?+val:(k==='ferr'?!!val:val);if(k==='fila'||k==='chip'){const l=convs.filter(c=>c.f===S.fila&&(S.chip==='Tudo'||c.nl>0));S.conv=l.length?convs.indexOf(l[0]):null}render();return}
+ if(d.conv){S.conv=+d.conv;render();return}
+ if(d.t){toast(d.t);return}
+ if(d.a==='fechar'||(d.a==='fechar-fora'&&e.target===el)){fechar();return}
+ if(d.a==='tema'){S.claro=!S.claro;guarda();render();return}
+ if(d.a==='rec'){S.rec=!S.rec;render();return}
+ if(d.a==='menu'){document.getElementById('lado').classList.toggle('aberto');return}
+ if(d.a==='limpar'){document.getElementById('tmsgs').innerHTML=`<div class="m eu">Oi! Sou ${mA()[1]}. Como posso te ajudar?</div>`;toast('Conversa de teste apagada.');return}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fechar();if(e.ctrlKey&&(e.key==='m'||e.key==='M')){e.preventDefault();S.claro=!S.claro;guarda();render()}});
+document.addEventListener('submit',e=>{e.preventDefault();
+ if(e.target.id==='fMsg'){const i=document.getElementById('msg');if(!i.value.trim())return;const m=document.createElement('div');m.className='m eu';m.innerHTML=esc(i.value)+'<small>agora · você</small>';const b=document.getElementById('msgs');b.appendChild(m);b.scrollTop=b.scrollHeight;i.value='';toast('Enviada. O robô pausou nesta conversa.')}
+ if(e.target.id==='fTeste'){const i=document.getElementById('tmsg');if(!i.value.trim())return;const b=document.getElementById('tmsgs');b.insertAdjacentHTML('beforeend','<div class="m">'+esc(i.value)+'</div><div class="m eu">Entendi! Me conta há quanto tempo você sente isso, pra eu indicar o tratamento certo.<small>resposta de exemplo</small></div>');b.scrollTop=b.scrollHeight;i.value=''}
+});
+window.NX={T,M,S,P,I,hd,brl,toast,fechar,render,abrir,cores,sel,mc,esc,jan,campo};
+addEventListener('hashchange',render);
+render();
+})();
+</script>
+<!--func--><script>
+/* Nexus CRM Pro — camada funcional de teste.
+   Tudo roda no navegador e fica salvo no próprio aparelho (localStorage). Nada é enviado a WhatsApp ou servidor. */
+(function(){
+const NX=window.NX; if(!NX) return;
+const {T,M,S,P,I,hd,brl,toast,fechar,render,cores,sel,mc,esc}=NX;
+const R=document.getElementById('raiz'), SO=document.getElementById('sobre');
+P.lixo='<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>';
+P.fone='<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>';
+const K='nexus-crm-teste-v1', ESPERA=25;
+const agora=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const ini=n=>String(n).split(' ').filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('');
+const fmt=s=>s.replace(/\*([^*\n]+)\*/g,'<b>$1</b>').replace(/_([^_\n]+)_/g,'<i>$1</i>');
+const din=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const val=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
+const PROD={'1':['3 meses · 4 frascos',397,'3 meses'],'2':['5 meses · 6 frascos',497,'5 meses'],'3':['1 ano · 13 frascos',797,'1 ano']};
+const TABELA='📋 *RESUMO DO SEU TRATAMENTO*\n_Você só paga quando receber em casa • Garantia de 90 dias_\n\n1️⃣ *3 MESES* — 4 frascos (3 + 1 grátis 🎁)\n💰 *R$ 397* à vista ou até 12x no cartão\n\n2️⃣ *5 MESES* — 6 frascos (5 + 1 grátis 🎁)\n💰 *R$ 497* à vista ou até 12x no cartão\n\n3️⃣ *1 ANO* — 13 frascos (12 + 1 grátis 🎁)\n💰 *R$ 797* à vista ou até 12x no cartão\n⭐ _Mais recomendado: maior desconto por frasco_\n\n🚚 Pagamento na entrega: cartão, Pix ou dinheiro.\n\nQual você quer iniciar hoje? Responda *1*, *2* ou *3* 👇';
+
+/* ---------- dados ---------- */
+let D;
+function semente(){
+ const base=[['Maria Rosa','(19) 9••••-4410','Campinas/SP','Anúncio Meta','Lead',['quente'],{sintomas:'Joelho, 3 anos',pedido:'2'}],['José Santana','(15) 9••••-2207','Sorocaba/SP','Anúncio Meta','Cliente',['pedido'],{pedido:'3'}],['Aparecida Lima','(11) 9••••-9031','Jundiaí/SP','Anúncio Meta','Lead',[],{}],['Carlos Freitas','(19) 9••••-7754','Piracicaba/SP','Indicação','Lead',['dúvida'],{}],['Neusa Barbosa','(19) 9••••-1180','Valinhos/SP','Anúncio Meta','Cliente',['cliente'],{pedido:'1'}],['Roberto Alves','(19) 9••••-6602','Americana/SP','Importado','Lead',[],{}]];
+ const contatos=base.map((x,i)=>({id:i+1,nome:x[0],tel:x[1],cidade:x[2],origem:x[3],status:x[4],tags:x[5],campos:x[6]}));
+ const m=(d,t,h,k)=>({d,t,h,k:k||'texto'});
+ const convs=[
+  {id:1,cid:1,fila:'Aguardando',nl:2,robo:null,msgs:[m('c','Oi, vi o anúncio. Tenho dor no joelho faz 3 anos','14:02'),m('r','Áudio 1 · 1:12','14:02','audio'),m('r','Áudio 2 · 0:58','14:21','audio'),m('r',TABELA,'14:29'),m('c','Quero o 2, como faço?','14:32')]},
+  {id:3,cid:3,fila:'Aguardando',nl:1,robo:null,msgs:[m('c','Boa tarde, quero saber do tratamento','13:55'),m('r','Áudio 1 · 1:12','13:55','audio'),m('c','Áudio · 0:42','13:58','audio')]},
+  {id:4,cid:4,fila:'Aguardando',nl:0,robo:null,msgs:[m('c','Tem contraindicação pra pressão alta?','13:41')]},
+  {id:2,cid:2,fila:'Atendendo',nl:0,robo:null,msgs:[m('r',TABELA,'14:10'),m('c','3','14:15'),m('h','Perfeito, seu José! Me passa o CEP e o número da casa?','14:18'),m('c','Meu CEP é 18045-120','14:20')]},
+  {id:6,cid:6,fila:'Atendendo',nl:0,robo:null,msgs:[m('r',TABELA,'11:40'),m('c','Vou pensar e te falo','11:47')]},
+  {id:5,cid:5,fila:'Resolvidos',nl:0,robo:null,msgs:[m('h','Dona Neusa, o entregador confirmou a entrega. Deu tudo certo?','12:02'),m('c','Obrigada, chegou certinho','12:10')]}];
+ const card=(id,cid,nome,sub,valor)=>({id,cid,nome,sub,valor});
+ const quadros=[{n:'Funil de vendas',cols:[{n:'Novo',cor:'#38BDF8',cards:[card(103,3,'Aparecida Lima','Ouvindo áudio 2',0),card(106,6,'Roberto Alves','Recebeu a tabela',0)]},{n:'Qualificação',cor:'#FBBF24',cards:[card(101,1,'Maria Rosa','5 meses',497),card(104,4,'Carlos Freitas','Dúvida de saúde',0)]},{n:'Ganho',cor:'#34D399',cards:[card(102,2,'José Santana','1 ano',797),card(105,5,'Neusa Barbosa','3 meses',397)]}]},
+  {n:'Pedidos e entregas',cols:[{n:'Endereço confirmado',cor:'#38BDF8',cards:[card(202,2,'José Santana','Sorocaba',797)]},{n:'Enviado',cor:'#FBBF24',cards:[]},{n:'Entregue e pago',cor:'#34D399',cards:[card(205,5,'Neusa Barbosa','Pix na entrega',397)]},{n:'Frustrado',cor:'#F87171',cards:[]}]}];
+ const fluxo={ativo:true,nos:[
+  {tipo:'msg',nome:'Mensagem',itens:[{k:'audio',v:'Áudio 1 · 1:12'},{k:'texto',v:'*PAGAMENTO NA ENTREGA* 🚚\nVocê só paga quando o produto chegar na sua casa.\n\nMe conta: onde é a sua dor e há quanto tempo você sente?'}],prox:1},
+  {tipo:'espera',nome:'Aguarda Resposta',campo:'sintomas',prox:3,tempo:2},
+  {tipo:'msg',nome:'Lembrete',itens:[{k:'texto',v:'Ainda está aí? 😊 Me conta onde é a sua dor que eu te explico como o tratamento funciona.'}],prox:3},
+  {tipo:'msg',nome:'Mensagem',itens:[{k:'texto',v:'Escute esse ÁUDIO com atenção 👇'},{k:'audio',v:'Áudio 2 · 0:58'}],prox:4},
+  {tipo:'espera',nome:'Aguarda Resposta',campo:'',prox:6,tempo:5},
+  {tipo:'msg',nome:'Lembrete',itens:[{k:'texto',v:'Conseguiu ouvir o áudio? Posso te mostrar os valores?'}],prox:6},
+  {tipo:'msg',nome:'Mensagem',itens:[{k:'video',v:'Vídeo · 0:51'},{k:'audio',v:'Áudio 3 · 1:40'},{k:'audio',v:'Áudio 4 · 1:05'},{k:'audio',v:'Áudio 5 · 0:37'}],prox:7},
+  {tipo:'msg',nome:'Tabela de preços',itens:[{k:'texto',v:TABELA}],prox:8},
+  {tipo:'espera',nome:'Aguarda Resposta',campo:'pedido',prox:9,tempo:null,valida:'123',erro:'Para eu separar o seu tratamento, responda só com *1*, *2* ou *3* 😊'},
+  {tipo:'kanban',col:'Qualificação',prox:10},
+  {tipo:'msg',nome:'Pedir endereço',itens:[{k:'texto',v:'Perfeito! Separei o seu tratamento de *{pacote}* por *{valor}*. ✅\n\nAgora me passa o seu *CEP* e o *número da casa* para eu agendar a entrega.'}],prox:11},
+  {tipo:'espera',nome:'Aguarda Resposta',campo:'endereco',prox:12,tempo:null},
+  {tipo:'pedido',prox:13},
+  {tipo:'msg',nome:'Confirmação',itens:[{k:'texto',v:'Pedido confirmado! 🎉\n\n📦 {pacote}\n💰 {valor} — você paga só na entrega (cartão, Pix ou dinheiro)\n📍 {endereco}\n\nUm dia antes da entrega eu te aviso por aqui.'}],prox:null}]};
+ return {v:1,seq:1000,testes:0,novosLeads:0,contatos,convs,quadros,vendas:[],fluxo,fone:null,foneAberto:false};
+}
+function carrega(){try{D=JSON.parse(localStorage.getItem(K))}catch(e){D=null} if(!D||D.v!==1)D=semente()}
+function salva(){try{localStorage.setItem(K,JSON.stringify(D))}catch(e){}}
+const ct=id=>D.contatos.find(c=>c.id===id)||{id:0,nome:'Contato removido',tel:'',cidade:'',origem:'',status:'Lead',tags:[],campos:{}};
+const cvDe=id=>D.convs.find(c=>c.id===id);
+const colDe=cid=>{for(const c of D.quadros[0].cols)if(c.cards.some(k=>k.cid===cid))return c.n;return ''};
+
+/* ---------- motor do fluxo ---------- */
+const tm={};
+function fala(cv,d,k,t){cv.msgs.push({d,k,t,h:agora()});if(d==='c')cv.nl=(cv.nl||0)+1;salva();pinta()}
+function troca(cv,t){const c=ct(cv.cid).campos,p=PROD[c.pedido];return t.split('{pacote}').join(p?p[0]:'').split('{valor}').join(p?brl(p[1]):'').split('{endereco}').join(c.endereco||'')}
+function moveCard(cid,qi,colNome,sub,valor){const q=D.quadros[qi];let k=null;q.cols.forEach(c=>{const i=c.cards.findIndex(x=>x.cid===cid);if(i>=0)k=c.cards.splice(i,1)[0]});const dest=q.cols.find(c=>c.n===colNome)||q.cols[0];if(!k)k={id:D.seq++,cid,nome:ct(cid).nome,sub:'',valor:0};if(sub!==undefined)k.sub=sub;if(valor!==undefined)k.valor=valor;dest.cards.unshift(k)}
+function criaPedido(cv){const c=ct(cv.cid),p=PROD[c.campos.pedido];if(!p)return;D.vendas.unshift({id:D.seq++,cid:c.id,nome:c.nome,tel:c.tel,produto:p[2],valor:p[1],h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),inst:'Vendas 01'});c.status='Cliente';if(!c.tags.includes('pedido'))c.tags.push('pedido');moveCard(c.id,0,'Ganho',p[2],p[1]);moveCard(c.id,1,'Endereço confirmado',c.campos.endereco||'',p[1]);toast('Pedido novo: '+c.nome+' · '+p[2]+' · '+brl(p[1]))}
+function roda(cv){
+ if(!cv.robo||cv.robo.pausado||cv.robo.no==null)return;
+ const n=D.fluxo.nos[cv.robo.no]; if(!n){cv.robo.no=null;salva();return}
+ clearTimeout(tm[cv.id]);
+ if(n.tipo==='msg'){const prox=()=>{if(!cv.robo||cv.robo.pausado)return;const i=cv.robo.i||0;if(i>=n.itens.length){cv.robo.i=0;cv.robo.no=n.prox;salva();if(n.prox==null)pinta();roda(cv);return}cv.robo.i=i+1;fala(cv,'r',n.itens[i].k,troca(cv,n.itens[i].v));tm[cv.id]=setTimeout(prox,1200)};tm[cv.id]=setTimeout(prox,900)}
+ else if(n.tipo==='espera'){cv.robo.esperando=true;salva();if(n.tempo!=null)tm[cv.id]=setTimeout(()=>{if(cv.robo&&cv.robo.esperando&&!cv.robo.pausado){cv.robo.esperando=false;cv.robo.no=n.tempo;cv.robo.i=0;salva();roda(cv)}},ESPERA*1000)}
+ else if(n.tipo==='kanban'){const p=PROD[ct(cv.cid).campos.pedido];moveCard(cv.cid,0,n.col,p?p[2]:'',p?p[1]:0);cv.robo.no=n.prox;salva();pinta();roda(cv)}
+ else if(n.tipo==='pedido'){criaPedido(cv);cv.robo.no=n.prox;salva();pinta();roda(cv)}
+}
+function recebe(cv,texto){
+ fala(cv,'c','texto',texto); if(cv.fila==='Resolvidos'){cv.fila='Aguardando';salva()}
+ if(!cv.robo||cv.robo.pausado)return;
+ if(!cv.robo.iniciado){cv.robo.iniciado=true;salva();if(D.fluxo.ativo)roda(cv);return}
+ if(cv.robo.esperando){const n=D.fluxo.nos[cv.robo.no],v=texto.trim();
+  if(n.valida&&!(v.length===1&&n.valida.includes(v))){setTimeout(()=>fala(cv,'r','texto',n.erro),800);return}
+  clearTimeout(tm[cv.id]);if(n.campo)ct(cv.cid).campos[n.campo]=v;cv.robo.esperando=false;cv.robo.no=n.prox;cv.robo.i=0;salva();roda(cv)}
+}
+function novoLead(){const n=D.seq++;D.testes++;D.novosLeads++;const c={id:n,nome:'Cliente teste '+D.testes,tel:'(11) 9'+String(7000+n).slice(-4)+'-'+String(1000+n*7).slice(-4),cidade:'Teste',origem:'Teste',status:'Lead',tags:['teste'],campos:{}};D.contatos.unshift(c);const cv={id:n,cid:n,fila:'Aguardando',nl:0,msgs:[],robo:{no:0,i:0,esperando:false,pausado:false,iniciado:false}};D.convs.unshift(cv);D.quadros[0].cols[0].cards.unshift({id:D.seq++,cid:n,nome:c.nome,sub:'Entrou pelo anúncio',valor:0});D.fone=n;salva();return cv}
+
+/* ---------- peças ---------- */
+const bolha=(m,inv)=>{const eu=inv?m.d==='c':m.d!=='c';const tx=m.k==='audio'?'▶ '+esc(m.t):m.k==='video'?'🎬 '+esc(m.t):fmt(esc(m.t));return `<div class="m ${eu?'eu':''}">${tx}<small>${m.h}${inv?'':m.d==='r'?' · fluxo':m.d==='h'?' · você':''}</small></div>`};
+const cf=(id,l,ph,tp)=>`<label class="f" for="${id}">${l}${Array.isArray(tp)?`<select class="c" id="${id}">${tp.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select>`:tp==='area'?`<textarea class="c" id="${id}" placeholder="${ph||''}"></textarea>`:`<input class="c" id="${id}" type="${tp||'text'}" placeholder="${ph||''}">`}</label>`;
+const janF=(t,s,corpo,bts,l)=>`<div class="veu" data-a="fechar-fora"><div class="jan ${l?'larga':''}" role="dialog" aria-modal="true" aria-label="${t}"><header><h2>${t}</h2>${s?`<p>${s}</p>`:''}</header><div class="corpo">${corpo}</div><footer><button class="bt" data-a="fechar">Cancelar</button>${bts}</footer></div></div>`;
+const optsCt=()=>D.contatos.map(c=>[c.id,c.nome+' · '+c.tel]);
+const optsProd=[['1','Dolomax · 3 meses · R$ 397'],['2','Dolomax · 5 meses · R$ 497'],['3','Dolomax · 1 ano · R$ 797']];
+
+/* ---------- janelas que funcionam ---------- */
+M.contatoForm=()=>janF('Dados do contato','Gerencie e organize seus contatos',cf('nc-nome','Nome completo','Nome completo')+cf('nc-email','E-mail','Digite o e-mail do contato','email')+cf('nc-tel','Telefone','DDD + número (10 ou 11 dígitos)','tel')+`<div class="grade g11">${cf('nc-cidade','Cidade','Ex.: Campinas')}${cf('nc-uf','Estado','SP')}</div>`+cf('nc-tag','Etiqueta (opcional)','Ex.: quente'),`<button class="bt" data-f="salvarContato" data-abrir="1">Salvar e abrir conversa</button><button class="bt pri" data-f="salvarContato">Salvar contato</button>`,1);
+M.novaVenda=()=>janF('Nova venda','Registre uma venda manualmente no histórico.',cf('nv-cid','Cliente','',optsCt())+cf('nv-prod','Produto','',optsProd)+cf('nv-inst','Instância','',[['Vendas 01','Vendas 01'],['Vendas 02','Vendas 02']]),`<button class="bt pri" data-f="salvarVenda">Registrar venda</button>`);
+M.novoChat=()=>janF('Criar novo chat','',cf('ch-con','Conexão','',[['1','Vendas 01 · (62) 9••••-1180']])+cf('ch-cid','Contato','',optsCt())+`<button class="bt" data-m="contatoForm" style="align-self:flex-start">${I('mais')}Criar novo contato</button>`,`<button class="bt pri" data-f="abrirChat">Abrir conversa</button>`);
+M.novoKanban=()=>janF('Novo Kanban','Dê um nome ao quadro. As colunas padrão já vêm prontas para você começar.',cf('kb-nome','Nome do Kanban','Digite o nome do Kanban...')+`<span class="dica">Visualização</span><div class="mini">${[['Novo','#38BDF8'],['Qualificação','#FBBF24'],['Ganho','#34D399']].map(c=>`<span style="--cor:${c[1]}">${c[0]}</span>`).join('')}</div>`,`<button class="bt pri" data-f="criarKanban">Criar</button>`);
+M.novaColuna=()=>janF('Nova coluna','',cf('co-nome','Nome da coluna','Ex.: Enviado')+cf('co-cor','Cor','',[['#38BDF8','Azul'],['#FBBF24','Amarelo'],['#34D399','Verde'],['#F87171','Vermelho'],['#A78BFA','Roxo']]),`<button class="bt pri" data-f="criarColuna">Adicionar</button>`);
+M.novoCard=()=>janF('Novo card','',cf('ca-cid','Contato','',optsCt())+cf('ca-sub','Observação','Ex.: 5 meses')+cf('ca-valor','Valor (R$)','0','number'),`<button class="bt pri" data-f="criarCard">Criar</button>`);
+M.addTag=()=>janF('Adicionar etiqueta','Pressione Enter para criar uma nova etiqueta.',cf('tg-nome','Etiqueta','Ex.: quente'),`<button class="bt pri" data-f="salvarTag">Adicionar</button>`);
+M.editNo=()=>{const n=D.fluxo.nos[S.noEd];if(!n)return janF('Bloco','Este bloco não tem texto para editar.','','');
+ if(n.tipo==='espera')return janF('Editar Aguarda Resposta','No teste, a espera de 20 minutos dura '+ESPERA+' segundos.',cf('no-campo','Campo para salvar a resposta','Ex.: sintomas'),`<button class="bt pri" data-f="salvarNo">Salvar</button>`);
+ return janF('Editar '+(n.nome||'Mensagem'),'O que você mudar aqui vale para o próximo lead de teste.',n.itens.map((it,i)=>it.k==='texto'?cf('no-'+i,'Texto','', 'area'):cf('no-'+i,it.k==='audio'?'Áudio (nome do arquivo)':'Vídeo (nome do arquivo)','')).join(''),`<button class="bt pri" data-f="salvarNo">Salvar</button>`,1)};
+
+/* ---------- telas com dados vivos ---------- */
+const dashBase=T.dashboard;
+T.dashboard=()=>{const nv=D.vendas.length,soma=D.vendas.reduce((a,v)=>a+v.valor,0),fat=36187+soma,ven=71+nv,leads=1284+D.novosLeads;
+ const linhas=D.vendas.map(v=>`<tr><td>${v.inst}</td><td class="num suave">(62) 9••••-1180</td><td class="num">${v.tel}</td><td>${esc(v.nome)} <span class="pill roxo">novo</span></td><td>${v.produto}</td><td class="num">${brl(v.valor)}</td><td class="suave">BRL</td><td class="num suave">${v.h}</td><td><span class="pill">pendente</span></td><td></td></tr>`).join('');
+ return dashBase().split('1.284').join(leads.toLocaleString('pt-BR')).replace('R$ 36.187,00',din(fat)).replace('>71</b>','>'+ven+'</b>').replace('>3.84<','>'+(fat/9420).toFixed(2)+'<').replace('5.53%',(ven/leads*100).toFixed(2)+'%').replace('R$ 509,68',din(fat/ven)).replace('R$ 18.250,00',din(fat*0.7646-9420)).replace('<tbody>','<tbody>'+linhas)};
+
+T.chats=()=>{
+ const naFila=f=>D.convs.filter(c=>c.fila===f);
+ const l=naFila(S.fila).filter(c=>S.chip==='Tudo'||(S.chip==='Não lidas'?c.nl>0:(c.msgs.length&&c.msgs[c.msgs.length-1].d==='c')));
+ let c=l.find(x=>x.id===S.cvId)||l[0]||null; S.cvId=c?c.id:null; const p=c?ct(c.cid):null;
+ return `<div class="chat"><div class="fila"><div class="topo"><h2>${mc}<span class="roxo">${I('chat')}</span>Ana Paula Moreira</h2><div style="display:flex;gap:6px"><div class="bus">${I('busca')}<input class="c" id="qch" placeholder="Buscar chats..." aria-label="Buscar chats"></div><button class="bt ic pri" data-m="novoChat" aria-label="Criar novo chat">${I('mais')}</button><button class="bt ic pri" data-m="filtrosChat" aria-label="Filtros">${I('filtro')}</button></div>
+ <div class="abas">${['Aguardando','Atendendo','Resolvidos'].map(x=>`<button class="${S.fila===x?'on':''}" data-s="fila=${x}">${x} ${naFila(x).length}</button>`).join('')}</div></div>
+ <div class="chips">${['Tudo','Não lidas','Não respondidas'].map(o=>`<button data-s="chip=${o}" class="${S.chip===o?'on':''}">${o}</button>`).join('')}<button class="bt ic" style="margin-left:auto;padding:4px 6px;border-radius:6px" data-m="agendadas" aria-label="Mensagens agendadas">${I('agenda')}</button></div>
+ <div class="rol" id="lch">${l.length?l.map(x=>{const q=ct(x.cid),u=x.msgs[x.msgs.length-1];return `<button class="conv ${c&&x.id===c.id?'on':''}" data-f="conv" data-id="${x.id}" data-busca="${esc((q.nome+' '+q.tel).toLowerCase())}"><span class="av" style="background:${cores[x.cid%10]}">${ini(q.nome)}</span><span style="min-width:0;flex:1"><p><span>${esc(q.nome)}</span><span class="suave num" style="font-weight:400;font-size:11px">${u?u.h:''}</span></p><small>${u?(u.k==='audio'?'▶ ':u.k==='video'?'🎬 ':'')+esc(u.t.split('\n')[0]):'Conversa nova'}</small>${x.nl?`<span class="pill roxo" style="margin-top:4px">${x.nl} não lida${x.nl>1?'s':''}</span>`:''}</span></button>`}).join(''):`<div style="padding:50px 16px;text-align:center"><span class="suave">${I('chat')}</span><p style="font-weight:600;margin-top:8px">Nenhum chat encontrado</p><p class="suave" style="font-size:13px">Tente ajustar os filtros de busca</p></div>`}</div></div>
+ ${c?`<div class="fio"><div class="topo"><span class="av" style="background:${cores[c.cid%10]}">${ini(p.nome)}</span><div><b>${esc(p.nome)}</b><small class="suave" style="display:block;font-size:12px">Vendas 01 · ${c.robo&&!c.robo.pausado&&c.robo.no!=null?'robô atendendo (Funil Dolomax)':c.robo&&c.robo.pausado?'robô pausado':'atendimento humano'}</small></div><div class="acoes" style="margin-left:auto">${c.robo&&c.robo.pausado&&c.robo.no!=null?`<button class="bt" data-f="retomar">Retomar robô</button>`:''}${c.fila!=='Atendendo'?`<button class="bt" data-f="atender">Atender</button>`:''}${c.fila!=='Resolvidos'?`<button class="bt" data-f="resolver">Resolver</button>`:''}</div></div>
+ <div class="msgs" id="msgs">${c.msgs.map(m=>bolha(m)).join('')||'<p class="suave" style="text-align:center">Sem mensagens ainda.</p>'}</div>
+ <form class="compor" id="fMsg2"><input class="c" id="msg2" placeholder="Digite uma mensagem (o robô pausa nesta conversa)" aria-label="Mensagem"><button class="bt pri ic" aria-label="Enviar">${I('enviar')}</button></form></div>
+ <div class="ficha"><h3>Contato</h3><dl><dt>Telefone</dt><dd class="num">${p.tel}</dd><dt>Cidade</dt><dd>${esc(p.cidade)}</dd><dt>Origem</dt><dd>${esc(p.origem)}</dd><dt>Status</dt><dd>${p.status}</dd></dl><h3>Etiquetas</h3><div class="acoes">${p.tags.map(t=>`<span class="pill roxo">${esc(t)}</span>`).join('')}<button class="bt" data-m="addTag">${I('mais')}Etiqueta</button></div><h3>Campos</h3><dl>${Object.keys(p.campos).length?Object.entries(p.campos).map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join(''):'<dt>Nenhum campo salvo</dt><dd></dd>'}</dl><h3>CRM</h3><span class="pill alerta" style="align-self:flex-start">${colDe(c.cid)||'Sem card'}</span><button class="bt" data-m="novaVenda">Registrar venda</button></div>`
+ :`<div class="centro" style="grid-column:2 / -1"><div><span class="chip g" style="width:64px;height:64px;margin:0 auto 14px;background:var(--painel3);color:var(--suave)">${I('chat')}</span><h2 style="font-size:16px">Selecione um chat</h2><p class="suave" style="font-size:13px;margin-top:4px">Escolha uma conversa na lista para começar a atender</p></div></div>`}</div>`};
+
+T.contatos=()=>{const n=D.contatos.length,cl=D.contatos.filter(c=>c.status==='Cliente').length;
+ return hd('contatos','Contatos',`${n} contatos • ${cl} ativos • ${n-cl} leads`,`<button class="bt" data-m="filtrosContato">${I('filtro')}Filtros</button><button class="bt" data-m="recentes">${I('hist')}Recentes</button><button class="bt" data-f="exportar">${I('baixa')}Exportar CSV</button><button class="bt" data-m="importarCsv">${I('sobe')}Importar CSV</button><button class="bt pri" data-m="contatoForm">${I('mais')}Novo Contato</button>`)+
+ `<div class="linha"><div style="flex:0 1 470px;display:flex"><div class="bus">${I('busca')}<input class="c" id="qc" placeholder="Buscar contato..." aria-label="Buscar contato"></div></div><div class="fim">${sel(['Todos os status','Lead','Cliente'])}${sel(['Todas as origens','Anúncio Meta','Indicação','Importado','Teste'])}</div></div>
+ <div class="card tabela"><table><thead><tr><th>Contato</th><th>Telefone</th><th>Cidade</th><th>Origem</th><th>Status</th><th>Etiquetas</th><th class="dir">Ações</th></tr></thead><tbody id="tct">${D.contatos.map(c=>`<tr data-busca="${esc((c.nome+' '+c.tel+' '+c.cidade).toLowerCase())}"><td><span style="display:flex;gap:10px;align-items:center"><span class="av" style="background:${cores[c.id%10]}">${ini(c.nome)}</span><b style="font-weight:600">${esc(c.nome)}</b></span></td><td class="num">${c.tel}</td><td class="suave">${esc(c.cidade)}</td><td class="suave">${esc(c.origem)}</td><td><span class="pill ${c.status==='Cliente'?'ok':''}">${c.status}</span></td><td>${c.tags.map(t=>`<span class="pill roxo">${esc(t)}</span>`).join(' ')}</td><td class="dir"><button class="bt ic" data-f="abrirConv" data-id="${c.id}" aria-label="Abrir conversa com ${esc(c.nome)}">${I('chat')}</button> <button class="bt ic per" data-f="delContato" data-id="${c.id}" aria-label="Excluir ${esc(c.nome)}">${I('lixo')}</button></td></tr>`).join('')}</tbody></table></div>`};
+
+T.kanban=()=>hd('kanban','Kanbans','Pipeline de vendas e gestão visual',`<button class="bt pri" data-m="novoKanban">${I('mais')}Novo Kanban</button>`)+
+ `<div class="grade g11">${D.quadros.map((q,k)=>`<div class="card pad form"><div class="mini">${q.cols.map(c=>`<span style="--cor:${c.cor}"><b>${c.cards.length}</b> ${esc(c.n)}</span>`).join('')}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-size:15px">${esc(q.n)}</b><small class="suave" style="display:block;font-size:12px">${q.cols.length} colunas · ${q.cols.reduce((a,c)=>a+c.cards.length,0)} cards</small></div><div class="acoes"><a class="bt pri" href="#quadro" data-kb="${k}">Abrir</a>${k>1?`<button class="bt ic per" data-f="delKanban" data-id="${k}" aria-label="Excluir quadro">${I('lixo')}</button>`:''}</div></div></div>`).join('')}</div>`;
+T.quadro=()=>{S.kb=+S.kb||0;const q=D.quadros[S.kb]||D.quadros[0];
+ return hd('kanban',esc(q.n),'Arraste os cards entre as colunas',`<a class="bt" href="#kanban">${I('volta')}Voltar</a><button class="bt" data-m="novaColuna">${I('mais')}Coluna</button><button class="bt pri" data-m="novoCard">${I('mais')}Novo card</button>`)+
+ `<div class="kanban">${q.cols.map((c,ci)=>`<div class="col" data-col="${ci}" style="--cor:${c.cor}"><h3>${esc(c.n)}<span class="n">${c.cards.length}</span></h3><p class="tot num">${brl(c.cards.reduce((a,k)=>a+(+k.valor||0),0))}</p><div class="cards">${c.cards.map(k=>`<div class="kc" data-card="${k.id}"><div class="l1"><span>${esc(k.nome)}</span><span class="num">${k.valor?brl(+k.valor):''}</span></div><div class="l2"><span>${esc(k.sub||'')}</span><span><button class="bt ic" style="padding:2px 4px;border:0;background:none" data-f="abrirConv" data-id="${k.cid}" aria-label="Abrir conversa">${I('chat')}</button><button class="bt ic per" style="padding:2px 4px;border:0;background:none" data-f="delCard" data-id="${k.id}" aria-label="Excluir card">${I('lixo')}</button></span></div></div>`).join('')}</div></div>`).join('')}</div>`};
+
+const edBase=T['fluxo-editor'];
+T['fluxo-editor']=()=>edBase().replace('<h1 style="font-size:16px">Funil Dolomax</h1>',`<h1 style="font-size:16px">Funil Dolomax</h1><span class="pill ${D.fluxo.ativo?'ok':'perigo'}">● ${D.fluxo.ativo?'ATIVO':'PAUSADO'}</span>`).replace('data-t="Fluxo pausado. Ninguém novo entra.">Pausar',`data-f="pausarFluxo">${D.fluxo.ativo?'Pausar':'Ativar'}`).replace('data-m="simular"','data-f="abrirFone"').replace('<div class="cv">','<p class="suave" style="font-size:12.5px">Clique num bloco para editar o texto. Para ver o fluxo rodando, use “Simular” ou “Testar como cliente”.</p><div class="cv">');
+const MAPA=[null,0,1,2,3,6,7,9];
+
+/* ---------- WhatsApp de teste ---------- */
+function fone(){
+ let el=document.getElementById('fone'); if(!el){el=document.createElement('div');el.id='fone';document.body.appendChild(el)}
+ if(!D.foneAberto){el.innerHTML=`<button class="bt pri fab" data-f="abrirFone">${I('fone')}Testar como cliente</button>`;return}
+ const cv=D.fone?cvDe(D.fone):null, velho=el.querySelector('#fmsg'), txt=velho?velho.value:'', foco=velho&&document.activeElement===velho;
+ const passo=cv&&cv.robo?(cv.robo.pausado?'robô pausado (um atendente assumiu)':cv.robo.no==null?'fluxo concluído':cv.robo.esperando?'aguardando a sua resposta':!cv.robo.iniciado?(D.fluxo.ativo?'mande a primeira mensagem':'fluxo pausado: ninguém responde'):'robô respondendo…'):'';
+ el.innerHTML=`<div class="fone" role="dialog" aria-label="WhatsApp de teste"><header><span class="av" style="background:#128C7E">${I('fone')}</span><div style="flex:1;min-width:0"><b>WhatsApp de teste</b><small>${cv?esc(ct(cv.cid).nome)+' · '+passo:'Você é o cliente'}</small></div><button class="bt ic" data-f="fecharFone" aria-label="Fechar">✕</button></header>
+ <div class="msgs" id="fmsgs">${cv?(cv.msgs.map(m=>bolha(m,true)).join('')||'<p class="aj">Você acabou de clicar no anúncio. Mande a primeira mensagem, por exemplo: <b>Oi, vi o anúncio</b></p>'):'<p class="aj">Aqui você conversa como se fosse um cliente novo chegando pelo anúncio. O funil responde sozinho e tudo aparece no CRM: Chats ao vivo, Kanban, Contatos e Dashboard.</p>'}</div>
+ ${cv?`<form class="compor" id="fFone"><input class="c" id="fmsg" placeholder="Escreva como o cliente" aria-label="Mensagem do cliente" autocomplete="off"><button class="bt pri ic" aria-label="Enviar">${I('enviar')}</button></form>`:''}
+ <footer><button class="bt pri" data-f="novoLead">${I('mais')}Novo lead</button><button class="bt" data-f="zerar">Zerar dados</button><span>Esperas de 20 min duram ${ESPERA} s no teste.</span></footer></div>`;
+ const novo=el.querySelector('#fmsg'); if(novo){novo.value=txt;if(foco)novo.focus()} const b=el.querySelector('#fmsgs'); if(b)b.scrollTop=b.scrollHeight;
+}
+function pinta(){
+ fone(); const v=location.hash.slice(1)||'dashboard';
+ if(['chats','quadro','contatos','dashboard','kanban'].includes(v)&&!SO.querySelector('.veu')){const a=document.activeElement,id=a&&R.contains(a)?a.id:'',tx=id?a.value:'';render();if(id){const e=document.getElementById(id);if(e){e.value=tx;e.focus()}}}
+ const b=document.getElementById('msgs'); if(b)b.scrollTop=b.scrollHeight;
+}
+
+/* ---------- ações ---------- */
+const A={
+ abrirFone(){D.foneAberto=true;salva();fone()}, fecharFone(){D.foneAberto=false;salva();fone()},
+ novoLead(){novoLead();D.foneAberto=true;salva();pinta();const i=document.getElementById('fmsg');if(i)i.focus()},
+ zerar(){Object.values(tm).forEach(clearTimeout);D=semente();D.foneAberto=true;salva();pinta();toast('Dados de teste zerados.')},
+ conv(el){const c=cvDe(+el.dataset.id);if(c){c.nl=0;S.cvId=c.id;salva();render();const b=document.getElementById('msgs');if(b)b.scrollTop=b.scrollHeight}},
+ atender(){const c=cvDe(S.cvId);if(!c)return;c.fila='Atendendo';if(c.robo)c.robo.pausado=true;S.fila='Atendendo';salva();pinta();toast('Conversa assumida. O robô pausou neste chat.')},
+ resolver(){const c=cvDe(S.cvId);if(!c)return;c.fila='Resolvidos';salva();pinta();toast('Conversa resolvida.')},
+ retomar(){const c=cvDe(S.cvId);if(!c||!c.robo)return;c.robo.pausado=false;salva();pinta();toast('Robô retomado.');if(!c.robo.esperando)roda(c)},
+ salvarContato(el){const nome=val('nc-nome');if(!nome){toast('Informe o nome do contato.');return}const id=D.seq++,tag=val('nc-tag');D.contatos.unshift({id,nome,tel:val('nc-tel')||'sem telefone',cidade:[val('nc-cidade'),val('nc-uf')].filter(Boolean).join('/')||'—',origem:'Manual',status:'Lead',tags:tag?[tag]:[],campos:val('nc-email')?{email:val('nc-email')}:{}});salva();fechar();if(el.dataset.abrir){A.abrirConv({dataset:{id}})}else{pinta();toast('Contato salvo.')}},
+ abrirConv(el){const cid=+el.dataset.id;let c=D.convs.find(x=>x.cid===cid);if(!c){if(!D.contatos.some(x=>x.id===cid)){toast('Este contato não existe mais.');return}c={id:D.seq++,cid,fila:'Atendendo',nl:0,msgs:[],robo:null};D.convs.unshift(c)}c.nl=0;S.fila=c.fila;S.chip='Tudo';S.cvId=c.id;salva();if(location.hash==='#chats')render();else location.hash='chats'},
+ abrirChat(){fechar();A.abrirConv({dataset:{id:val('ch-cid')}})},
+ delContato(el){const id=+el.dataset.id;D.contatos=D.contatos.filter(c=>c.id!==id);D.convs=D.convs.filter(c=>c.cid!==id);D.quadros.forEach(q=>q.cols.forEach(c=>c.cards=c.cards.filter(k=>k.cid!==id)));if(D.fone===id)D.fone=null;salva();pinta();toast('Contato excluído.')},
+ exportar(){const csv='nome;telefone;cidade;origem;status;etiquetas\n'+D.contatos.map(c=>[c.nome,c.tel,c.cidade,c.origem,c.status,c.tags.join(',')].join(';')).join('\n');try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='contatos-nexus.csv';document.body.appendChild(a);a.click();a.remove()}catch(e){}toast('Exportação gerada com '+D.contatos.length+' contatos.')},
+ salvarVenda(){const c=ct(+val('nv-cid')),p=PROD[val('nv-prod')];if(!c.id||!p)return;D.vendas.unshift({id:D.seq++,cid:c.id,nome:c.nome,tel:c.tel,produto:p[2],valor:p[1],h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),inst:val('nv-inst')});c.status='Cliente';c.campos.pedido=val('nv-prod');moveCard(c.id,0,'Ganho',p[2],p[1]);salva();fechar();pinta();toast('Venda registrada: '+c.nome+' · '+brl(p[1]))},
+ salvarTag(){const t=val('tg-nome'),c=cvDe(S.cvId);if(!t||!c)return;const p=ct(c.cid);if(!p.tags.includes(t))p.tags.push(t);salva();fechar();pinta();toast('Etiqueta adicionada.')},
+ criarKanban(){const n=val('kb-nome');if(!n){toast('Dê um nome ao Kanban.');return}D.quadros.push({n,cols:[{n:'Novo',cor:'#38BDF8',cards:[]},{n:'Qualificação',cor:'#FBBF24',cards:[]},{n:'Ganho',cor:'#34D399',cards:[]}]});salva();fechar();pinta();toast('Kanban criado com 3 colunas.')},
+ delKanban(el){D.quadros.splice(+el.dataset.id,1);S.kb=0;salva();pinta();toast('Kanban excluído.')},
+ criarColuna(){const n=val('co-nome');if(!n){toast('Dê um nome à coluna.');return}(D.quadros[S.kb]||D.quadros[0]).cols.push({n,cor:val('co-cor'),cards:[]});salva();fechar();pinta();toast('Coluna adicionada.')},
+ criarCard(){const c=ct(+val('ca-cid'));if(!c.id)return;(D.quadros[S.kb]||D.quadros[0]).cols[0].cards.unshift({id:D.seq++,cid:c.id,nome:c.nome,sub:val('ca-sub'),valor:+val('ca-valor')||0});salva();fechar();pinta();toast('Card criado.')},
+ delCard(el){const id=+el.dataset.id;(D.quadros[S.kb]||D.quadros[0]).cols.forEach(c=>c.cards=c.cards.filter(k=>k.id!==id));salva();pinta();toast('Card excluído.')},
+ pausarFluxo(){D.fluxo.ativo=!D.fluxo.ativo;salva();render();fone();toast(D.fluxo.ativo?'Fluxo ativado.':'Fluxo pausado. Lead novo não recebe resposta.')},
+ salvarNo(){const n=D.fluxo.nos[S.noEd];if(!n)return;if(n.tipo==='espera'){n.campo=val('no-campo')}else n.itens.forEach((it,i)=>{const v=val('no-'+i);if(v)it.v=v});salva();fechar();toast('Bloco salvo. Vale para o próximo lead de teste.')}
+};
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-f]'); if(el){e.preventDefault();const f=A[el.dataset.f];if(f)f(el);return}
+ const no=e.target.closest('.canvas .no'); if(no){const i=[...no.parentElement.querySelectorAll('.no')].indexOf(no),k=MAPA[i];if(k==null){toast('O bloco Início só mostra os números do fluxo.');return}S.noEd=k;NX.abrir('editNo');const n=D.fluxo.nos[k];if(n.tipo==='espera'){const c=document.getElementById('no-campo');if(c)c.value=n.campo||''}else n.itens.forEach((it,j)=>{const c=document.getElementById('no-'+j);if(c)c.value=it.v})}
+});
+document.addEventListener('submit',e=>{
+ if(e.target.id==='fFone'){e.preventDefault();const i=document.getElementById('fmsg'),t=i.value.trim();if(!t)return;i.value='';const cv=cvDe(D.fone);if(cv)recebe(cv,t)}
+ if(e.target.id==='fMsg2'){e.preventDefault();const i=document.getElementById('msg2'),t=i.value.trim();if(!t)return;i.value='';const c=cvDe(S.cvId);if(!c)return;c.nl=0;if(c.robo&&!c.robo.pausado&&c.robo.no!=null){c.robo.pausado=true;toast('Você respondeu. O robô pausou nesta conversa.')}if(c.fila!=='Atendendo'){c.fila='Atendendo';S.fila='Atendendo'}fala(c,'h','texto',t)}
+});
+document.addEventListener('input',e=>{const id=e.target.id;if(id!=='qc'&&id!=='qch')return;const q=e.target.value.toLowerCase();document.querySelectorAll(id==='qc'?'#tct tr':'#lch .conv').forEach(r=>{r.hidden=!!q&&!(r.dataset.busca||'').includes(q)})});
+let pego=null;
+document.addEventListener('dragstart',e=>{const k=e.target.closest&&e.target.closest('.kc');pego=k?+k.dataset.card:null});
+document.addEventListener('drop',e=>{const col=e.target.closest&&e.target.closest('.col');if(!col||pego==null||col.dataset.col===undefined)return;const q=D.quadros[S.kb]||D.quadros[0];let k=null;q.cols.forEach(c=>{const i=c.cards.findIndex(x=>x.id===pego);if(i>=0)k=c.cards.splice(i,1)[0]});if(k)q.cols[+col.dataset.col].cards.unshift(k);pego=null;salva();setTimeout(render,0)});
+
+/* ---------- estilo ---------- */
+const st=document.createElement('style');
+st.textContent=`.toast{bottom:auto!important;top:calc(16px + env(safe-area-inset-top,0px))}
+.fab{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:45;padding:11px 18px;border-radius:99px;box-shadow:0 10px 30px var(--sombra)}
+.fone{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;width:min(360px,calc(100vw - 32px));height:min(600px,calc(100vh - 32px));background:var(--painel);border:1px solid var(--acaolinha);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px var(--sombra)}
+.fone header{display:flex;gap:10px;align-items:center;padding:10px 12px;background:var(--painel2);border-bottom:1px solid var(--linha)}
+.fone header b{display:block;font-size:13.5px}.fone header small{display:block;font-size:11.5px;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fone .msgs{background:var(--bg)}.fone .m{max-width:86%}
+.fone .aj{font-size:13px;color:var(--suave);text-align:center;margin:auto 6px;line-height:1.5}
+.fone footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-top:1px solid var(--linha);background:var(--painel2)}
+.fone footer span{font-size:11px;color:var(--fraco);flex:1;min-width:120px}.fone footer .bt{padding:5px 10px;font-size:12px}
+.canvas .no{cursor:pointer}.canvas .no:hover{border-color:var(--acao)}`;
+document.head.appendChild(st);
+
+/* ---------- partida ---------- */
+carrega();
+D.convs.forEach(c=>{if(c.robo&&c.robo.iniciado&&!c.robo.pausado&&c.robo.no!=null)roda(c)});
+render(); fone();
+})();
+
+</script><!--/func-->
